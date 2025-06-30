@@ -34,7 +34,7 @@ App Start -> main.ts  -> app.module.ts ---------|--> controllers
 - Os módulos são fundamentais na construção de um applicação nest que encapsulam controladores, serviços, provedores e outros componentes.
 - promovem a organização de código, a reutilização e a capacidade de teste
 - Usado para dividir o aplicativo em unidades menores e independentes, facilitando o gerenciamento e manutenção do código.
-- O Nest usa injeção de dependência para fornecer as módulos as dependências necessárias, promovendo o aclopamento flexível e facilidade de testes
+- O Nest usa injeção de dependência para fornecer os módulos e as dependências necessárias, promovendo o aclopamento flexível e facilidade de testes
 - O módulos gerenciam controladores, serviços, provedores e outras classes além de importar ou exportar outros módulos dentro de outros módulos.
 - Ex:
     user.modules.ts
@@ -43,4 +43,36 @@ App Start -> main.ts  -> app.module.ts ---------|--> controllers
         |-- users.controler.spec.ts (test file): teste do users.controler.ts
         |-- users.entity.ts: defini a entidade das estruturas do banco de dados
 
-- Cria o arquivo do módulo -> cria a classe com @Module decorator -> importa no arquivo  module principal
+- Cria o arquivo do módulo -> cria a classe com @Module decorator -> importa no arquivo module principal
+
+- Comando no cli para criar um novo módulo: `nest g module nome-do-modulo`
+- Comando no cli para criar os controladores e serviçõs de um módulo: `nest g controller nome-do-modulo`
+
+## REST API
+
+- REpresentation State Transfer (REST) API é um estilo de arquitetura de software que define como clientes (navegador web e apps mobiles) podem interagir com os servidores para recuperar e manipular dados
+
+- Seis príncipios: Arquitetura Cliente-Servidor, sem estado, armazenável em cache, sistema em camadas, interface uniforme e suportar código sob demanda (opcional).
+
+- **Arquitetura Cliente-Servidor**: O cliente envia uma sollicitação e o servidor processa e responde-o.
+
+- **Sem estado**: Cada solicitação é tratada de forma independete, possui todas as informações necessárias e o servidor não mantém nenhum estado de sessão para o cliente, ou seja o cliente tem que enviar um token de autenticação junto á solicitação.
+
+- **Armazenável em cache**: Na primeira solicitação do cliente, armazenamos a resposta no cache e ao fazer a mesma solicitação o cliente oobtém os dados do cache ao invés do servidor processa outra resposta. A informaçãoo pode ser  armazenada tanto em servidooress intermediários quanto no próprio cliente
+
+- **Sistema em camadas**: Nem o cliente e o servidor podem dizer se a comunicação está acontecendo com um aplicativo específico ou com muitas árvores intermediárias (middleware, cache, database).
+
+- **Interface Uniforme**: Conjunto padrão de métodos HTTP para executar operações
+
+- **Código sob demanda**: permite que os clientes baixem e executem código dinamicamente no servidor.
+
+## Controller
+
+- são responsáveis por manipular solicitações HTTP e retornar respostas apropiadas
+
+## Routes Decorators
+- são usados para definir rotas às quais seu aplicativo responderá e eles fornecem uma maneira declarativa de mapear métodos HTTP
+
+## Services
+- são classes que encapsulam a lógica de negócios do seu aplicativo e são responsáveis por executar tarefas como acesso a dados, alguns cálculos complexos, etc. 
+- são injetados em controladores ou outros serviços que promovem acoplamento fraco e testabilidade
