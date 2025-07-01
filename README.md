@@ -1,3 +1,5 @@
+comando para que o prettier reescreva o código com as regras `npx prettier src/users/users.controller.ts --write`
+
 # Nest
 
 - É uma progressão do node.js para construção de apicativos eficientes do lado servidor
@@ -71,8 +73,43 @@ App Start -> main.ts  -> app.module.ts ---------|--> controllers
 - são responsáveis por manipular solicitações HTTP e retornar respostas apropiadas
 
 ## Routes Decorators
+
 - são usados para definir rotas às quais seu aplicativo responderá e eles fornecem uma maneira declarativa de mapear métodos HTTP
 
 ## Services
+
 - são classes que encapsulam a lógica de negócios do seu aplicativo e são responsáveis por executar tarefas como acesso a dados, alguns cálculos complexos, etc. 
 - são injetados em controladores ou outros serviços que promovem acoplamento fraco e testabilidade
+
+## Parâmetro de rota
+
+- são os espaços reservados em uma rota que permitem capturar partes dinâmicas da URL.
+- Sempre serão lidos e retornados como strings, você faz a conversão manual.
+- GetUserById: GET https://localhost:3000/users/**101** - parte dinâmica
+- Inserindo vários parâmetros obrigatórios e não obrigatórios de rota https://localhost:3000/users/**:id/:gender/:locate?**
+- No Nest fica:
+  URL: http://localhost:3000/users/1/jhon?gender=male
+  @Get(':id/:name')
+  getUserById(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('name') name: string,
+    @Query('gender') gender?: string,
+  ) {
+    return { id, name, gender };
+  }
+  Ou crie duas rotas uma com e outra sem o gender
+
+## Parâmetros de consulta
+- são informações adicionais anexadas ao final da URL separadas por um ponto de interrogação
+- possuem pares de valores-chaves onde cada chave é seguidaa por um sinal de = e seu valor
+- GET https://localhost:3000/users?**gender=male&isMarried=false**
+
+## Pipes
+
+- são funções que validam ou transformam ou validam os dados que vêm com a solicitação antes que cheguem ao método contolador
+- Validação: valida os dados para que eles atendam a requisitos especificos
+- Transformação: transformar os dados em formatos ou estruturas diferentes
+- higienização: remover conteúdo potencialmente prejudicial, como tags html e scripts maliciosos
+-Ex:
+  Incoming Request -> other layers -> pipes -> controller
+- OBS: o prório pipe retorna um erro ao cliente quando uma transformação de tipo não é bem sucessida. Exemplo: http://localhost:3000/users/abc era pra ser um id númerico que seria convertido para número, mas mandaram 'abc' que não pode ser convertido para número.
