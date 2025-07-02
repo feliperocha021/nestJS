@@ -113,3 +113,7 @@ App Start -> main.ts  -> app.module.ts ---------|--> controllers
 -Ex:
   Incoming Request -> other layers -> pipes -> controller
 - OBS: o prório pipe retorna um erro ao cliente quando uma transformação de tipo não é bem sucessida. Exemplo: http://localhost:3000/users/abc era pra ser um id númerico que seria convertido para número, mas mandaram 'abc' que não pode ser convertido para número.
+
+## DTOs
+
+- são objetos de transferência de dados e é uma classe simples que é usada para representar dados que estão sendo transferidos entre diferentes camadas

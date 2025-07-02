@@ -5,20 +5,31 @@ import {
   Post,
   Query,
   ParseIntPipe,
+  DefaultValuePipe,
 } from '@nestjs/common';
+
 import { UsersService } from './users.service';
+
 @Controller('users')
 export class UsersController {
+  usersService: UsersService;
+
+  constructor() {
+    this.usersService = new UsersService();
+  }
+
   @Get()
-  getUsers() {
-    const usersService = new UsersService();
-    return usersService.getAllUsers();
+  getUsers(
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+  ) {
+    return this.usersService.getAllUsers();
   }
 
   @Get(':id/:name')
   getUserById(
     @Param('id', ParseIntPipe) id: number,
-    @Param('name') name: string,
+    @Param('name') name: number,
     @Query('gender') gender?: string,
   ) {
     return { id, name, gender };
@@ -29,12 +40,11 @@ export class UsersController {
     const user = {
       id: 3,
       name: 'merry',
-      age: 30,
+      email: 'merry@gmail.com',
       gender: 'female',
       isMarried: true,
     };
-    const usersService = new UsersService();
-    usersService.createUser(user);
-    return usersService.getUserById(user.id);
+    this.usersService.createUser(user);
+    return this.usersService.getUserById(user.id);
   }
 }

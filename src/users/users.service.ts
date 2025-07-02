@@ -2,12 +2,24 @@ export class UsersService {
   users: {
     id: number;
     name: string;
-    age: number;
+    email: string;
     gender: string;
     isMarried: boolean;
   }[] = [
-    { id: 1, name: 'jhon', age: 28, gender: 'male', isMarried: false },
-    { id: 2, name: 'marry', age: 26, gender: 'female', isMarried: false },
+    {
+      id: 1,
+      name: 'jhon',
+      email: 'jhon@gmail.com',
+      gender: 'male',
+      isMarried: false,
+    },
+    {
+      id: 2,
+      name: 'marry',
+      email: 'marry@gmail.com',
+      gender: 'female',
+      isMarried: false,
+    },
   ];
   getAllUsers() {
     return this.users;
@@ -20,7 +32,7 @@ export class UsersService {
   createUser(user: {
     id: number;
     name: string;
-    age: number;
+    email: string;
     gender: string;
     isMarried: boolean;
   }) {
