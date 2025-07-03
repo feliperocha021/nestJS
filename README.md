@@ -117,3 +117,26 @@ App Start -> main.ts  -> app.module.ts ---------|--> controllers
 ## DTOs
 
 - são objetos de transferência de dados e é uma classe simples que é usada para representar dados que estão sendo transferidos entre diferentes camadas
+
+- app.useGlobalPipes(new ValidationPipe()); faz com que esse pipe de validação seja aplicado para cada solicitação de entrada, então será aplicado em cada método do controlador que irá manipular uma requisição
+
+- Faz com que a solicitação ignore propiedades que não foram definidas no dto para o controller  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  );
+
+- Faz com que a solicitação lançe um erro para propiedades que não foram definidas no dto para o controller  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
+
+- Garante que os dados que estão sendo atribuidos á variavel definina na função do controler seja uma instância de uma dto  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  );
+
+## DTO em Parâmetros de rota

@@ -12,9 +12,9 @@ export class CreateUserDto {
   @IsNumber()
   id: number;
 
-  @IsString({ message: 'Name should be a string value.' })
+  @IsString({ message: 'name should be a string value.' })
   @IsNotEmpty()
-  @MinLength(3, { message: 'Name should have a minimum of 3 characteres.' })
+  @MinLength(3, { message: 'name should have a minimum of 3 characteres.' })
   name: string;
 
   @IsEmail()
@@ -22,7 +22,7 @@ export class CreateUserDto {
 
   @IsString()
   @IsOptional()
-  gender: string;
+  gender?: string;
 
   @IsBoolean()
   isMarried: boolean;
