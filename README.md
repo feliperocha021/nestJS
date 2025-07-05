@@ -139,4 +139,45 @@ App Start -> main.ts  -> app.module.ts ---------|--> controllers
     }),
   );
 
-## DTO em Parâmetros de rota
+## Mappedd types
+
+- permite que você herde um DTO específico e importe parcialmente algumas partes desse DTO específico
+
+## Dependency Injection
+
+- Quando criamos uma instância de uma classe explicitamente dentro de outra classe, fazemos com que a classe que possui a instância criada torne-se fortemente acoplada a outra classe
+
+- Isso promove algumas desvantagens como:
+
+  **Baixa flexibilidade**: Alterar a classe instanciada pode exigir mudanças em várias partes do código, dificultando a manutenção e evolução.
+
+ **Dificuldade de testes**: Testes unitários ficam mais complexos porque não é fácil substituir a instância concreta por um mock ou stub.
+
+ *** Viola o princípio de Inversão de Dependência (DIP)***: Esse princípio do SOLID defende que módulos de alto nível não devem depender de módulos de baixo nível diretamente, mas sim de abstrações.
+s
+- Por isso temos a injeção de dependência que envolve passar dependências para um objeto em vez de o próprio objeto criá-las, promovendo o acoplammento flexível, tornando o código mais modular, testável e sustentável.
+
+## Types of Dependency
+              |--> Intra-Modular
+- Depedency---|--> Inter-Modular
+              |--> Circular
+
+### Intra-modular
+
+- refere-se a uma dependência entre os commponentes dentro do mesmo módulo
+
+- Exemplo: o módulo de usuário possui o user controller que é dependente do user service, então o Nest injeta uma instância de user service dentro de user controller
+
+### Inter-Modular
+
+- refere-se a uma dependência entre os commponentes de módulos distintos
+
+- Exemplo: temos dois módulos o user e o comment e o comment service é dependente do user service
+
+### Circular
+
+- refere-se quando um ou mais módulos ou componentes têm uma relação de dependência direta ou indireta entre si formando um cilco
+
+- Exemplo: temos o module user e o auth, em user service para autenticar um usuário precisamos de uma instância de auth service, por outro lado, no auth service para retornar detalhes do usuário é necessário uma instância de user service.
+
+- OBS: É sempre bom evitar a dependência circular, pois acaba violando o princípio da responsabilidade única (SRP). Se dois serviços precisam tanto um do outro, talvez estejam fazendo mais do que deveriam.

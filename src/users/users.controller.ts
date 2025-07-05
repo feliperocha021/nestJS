@@ -7,18 +7,16 @@ import {
   Body,
   ParseIntPipe,
   DefaultValuePipe,
+  Patch,
 } from '@nestjs/common';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dtos/create-user.dto';
+import { UpateUserDto } from './dtos/update-user.dto';
 
 @Controller('users')
 export class UsersController {
-  usersService: UsersService;
-
-  constructor() {
-    this.usersService = new UsersService();
-  }
+  constructor(private usersService: UsersService) {}
 
   @Get()
   getUsers(
@@ -42,5 +40,10 @@ export class UsersController {
     // this.usersService.createUser(user);
     console.log(user instanceof CreateUserDto);
     return 'A new user has been created!';
+  }
+
+  @Patch()
+  updateUser(@Body() user: UpateUserDto) {
+    console.log(user);
   }
 }

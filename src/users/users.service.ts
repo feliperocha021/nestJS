@@ -1,3 +1,6 @@
+import { Injectable } from '@nestjs/common';
+
+@Injectable() // faz com que ele possa ser fornecido em qualquer outra classe
 export class UsersService {
   users: {
     id: number;
@@ -26,7 +29,7 @@ export class UsersService {
   }
 
   getUserById(id: number) {
-    return this.users.filter((el) => el.id === id);
+    return this.users.find((el) => el.id === id);
   }
 
   createUser(user: {
