@@ -1,13 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable() // faz com que ele possa ser fornecido em qualquer outra classe
 export class UsersService {
+  constructor(
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
+  ) {}
+
   users: {
     id: number;
     name: string;
     email: string;
     gender: string;
     isMarried: boolean;
+    password: string;
   }[] = [
     {
       id: 1,
@@ -15,6 +22,7 @@ export class UsersService {
       email: 'jhon@gmail.com',
       gender: 'male',
       isMarried: false,
+      password: 'dopoda311',
     },
     {
       id: 2,
@@ -22,10 +30,14 @@ export class UsersService {
       email: 'marry@gmail.com',
       gender: 'female',
       isMarried: false,
+      password: 'marryzinha123',
     },
   ];
   getAllUsers() {
-    return this.users;
+    if (this.authService.isAuthenticated) {
+      return this.users;
+    }
+    return 'you are not logged';
   }
 
   getUserById(id: number) {
@@ -38,6 +50,7 @@ export class UsersService {
     email: string;
     gender: string;
     isMarried: boolean;
+    password: string;
   }) {
     this.users.push(user);
   }

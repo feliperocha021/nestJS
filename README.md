@@ -181,3 +181,10 @@ s
 - Exemplo: temos o module user e o auth, em user service para autenticar um usuário precisamos de uma instância de auth service, por outro lado, no auth service para retornar detalhes do usuário é necessário uma instância de user service.
 
 - OBS: É sempre bom evitar a dependência circular, pois acaba violando o princípio da responsabilidade única (SRP). Se dois serviços precisam tanto um do outro, talvez estejam fazendo mais do que deveriam.
+
+## ORM - objeto relacional de mapiamento
+
+- recebe a solicitação do service e executa a operação necessária no banco de dados
+- escrevemos o código typescript que é convertido  pelo ORM em uma consulta SQL
+- Também definimos, relações e tabelas
+- **Desvantagem**: menos controle sobre as consultas SQl
