@@ -5,6 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.modules';
 import { TweetModule } from './tweet/tweet.module';
 import { AuthModule } from './auth/auth.module';
+import * as dotenv from 'dotenv';
+
+dotenv.config({ path: './.env' });
 
 @Module({
   imports: [
@@ -13,12 +16,13 @@ import { AuthModule } from './auth/auth.module';
     AuthModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      synchronize: true, // deve ser usado apenas em ambiente de desenvolvimento
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: '1234',
-      database: 'nestjs',
+      host: process.env.POSTGRES_HOST,
+      port: +process.env.POSTGRES_PORT!,
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DB,
+      synchronize: true, // Somente em dev! Cuidado em produção.
+      // autoLoadEntities: true, // Carrega as entidades sem precisar registrar manualmente
     }),
   ],
   controllers: [AppController],

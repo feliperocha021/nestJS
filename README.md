@@ -188,3 +188,55 @@ s
 - escrevemos o código typescript que é convertido  pelo ORM em uma consulta SQL
 - Também definimos, relações e tabelas
 - **Desvantagem**: menos controle sobre as consultas SQl
+
+## Explicação do uso do docker noo projeto
+
+**Dockerfile**:
+
+Define como a imagem da sua aplicação NestJS será construída.
+
+Instala dependências, copia os arquivos, define WORKDIR, configura a porta, etc.
+
+Quando o Compose executa o serviço nest-app, ele usa esse Dockerfile para gerar o contêiner.
+
+**docker-compose.yml**:
+
+Define todos os serviços envolvidos: NestJS, PostgreSQL, MongoDB.
+
+Estabelece as dependências entre eles (depends_on), as portas, as variáveis de ambiente (via .env), o volume e a rede compartilhada.
+
+**Volumes nomeados (pgdata, mongodata)**:
+
+São definidos automaticamente e persistem os dados dos bancos, mesmo se o contêiner for destruído.
+
+Não precisam ser criados manualmente — Compose cuida disso ao subir os serviços.
+
+**Rede personalizada (dev-net)**:
+
+Do tipo bridge.
+
+Permite que os serviços dentro dessa rede se comuniquem entre si, usando os nomes dos containers como host (ex: postgres ou mongo).
+
+E sim, containers fora da dev-net não têm acesso direto — a não ser que estejam conectados manualmente à mesma rede.
+
+**Comunicação com o host**:
+
+Os serviços que têm ports: definidos (ex: 3000:3000) estão acessíveis via localhost no seu sistema.
+
+Os bancos de dados também ficam acessíveis via suas portas se forem mapeadas.
+
+- Os arquivos up.sh e down.sh iniciam e desligam os containers, mas pode usar o terminal se quiser
+
+Alternativas mais avançadas:
+Se quiser manter os dados no banco, use:
+
+
+`docker compose down`
+`docker compose up --build -d`
+Isso derruba sem apagar volumes, útil se já tiver tabelas criadas e não quiser perder tudo.
+
+Se você quiser realmente excluir tudo e reiniciar do zero:
+
+`docker compose down -v`
+`docker volume prune`
+`docker image prune`
