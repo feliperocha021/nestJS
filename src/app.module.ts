@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.modules';
 import { TweetModule } from './tweet/tweet.module';
 import { AuthModule } from './auth/auth.module';
 import * as dotenv from 'dotenv';
+import { dataSourceOptions } from './db/data-source';
 
 dotenv.config({ path: './.env' });
 
@@ -14,15 +15,10 @@ dotenv.config({ path: './.env' });
     UsersModule,
     TweetModule,
     AuthModule,
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.POSTGRES_HOST,
-      port: +process.env.POSTGRES_PORT!,
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_DB,
-      synchronize: true, // Somente em dev! Cuidado em produção.
-      // autoLoadEntities: true, // Carrega as entidades sem precisar registrar manualmente
+    TypeOrmModule.forRootAsync({
+      useFactory: () => ({
+        ...dataSourceOptions,
+      }),
     }),
   ],
   controllers: [AppController],

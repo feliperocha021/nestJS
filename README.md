@@ -240,3 +240,81 @@ Se você quiser realmente excluir tudo e reiniciar do zero:
 `docker compose down -v`
 `docker volume prune`
 `docker image prune`
+
+- se quiser ver em tempo real o que está acontecendo no container onde o Nest
+`docker compose logs -f nest-app`
+
+## Repository Pattern
+
+- É um padrão design que atua como um intermediário entre sua lógica de negócios e os ORMs.
+- Fornece uma camada de abstrção para acessar e manipular dados no banco de dados.
+
+user.entity.ts ---> usersRepository.ts ---> users.service.ts ---> database
+
+- para que o service faça seu trabalho para entrar em contato com o banco de dados e buscar e gravar dados no banco de dados é necessário um repository que é criado a parti de uma entity
+- e uma entity é uma classe que define quais colunas deseja ter em uma tabela em seu database
+- **não** use o nome em **plural** para umaa entity
+- repository não é um arquivo físico,  então não precisa criar um arquivo para um repository, o ORM cuida disso, você apenas injeta o repositório em um serviço onde deseja usá-lo.
+
+## Migrations
+
+- são scripts que versionam mudanças na estrutura do banco de dados: criação de tabelas, colunas, tipos, relacionamentos etc. Elas permitem que o banco evolua junto com o código — e de forma controlada, rastreável e segura.
+
+- Embora synchronize: true seja conveniente em desenvolvimento, ele:
+
+⚠️ Não aplica renomeações, deleções ou alterações profundas
+
+🧩 Não gera histórico nem permite rollback
+
+❌ É arriscado em ambientes de produção (pode destruir dados sem aviso)
+
+➡️ É ideal para testes rápidos, mas não para ambientes reais.
+
+- **Vantagens**:
+  - 💼 Controle de Versão: Rastreia cada mudança na estrutura do banco
+  - 🔙 Reversibilidade: Permite desfazer alterações com migration:revert
+  - 🌍 Consistência entre ambientes: Garante que dev, staging e produção usem a mesma estrutura
+  - 🤝 Trabalho em equipe: Todos aplicam as mesmas mudanças com os mesmos scripts
+
+- **Scripts importantes no package.json**:
+  - **""migration:generate:inside": "docker exec -it nest-app npx typeorm migration:generate""**: Gera um novo arquivo de migration com base nas diferenças entre suas entidades e o estado atual do banco.
+
+    - o docker exec -it nest-app é necessário, pois os containers estão em uma subrede definida no commpose.yaml
+
+    - O nome da migration é passado depois com -- -n NomeDaMigration
+
+    - O TypeORM analisa suas entidades e cria comandos SQL (up() e down())
+
+    - Exemplo: `npm run migration:generate:inside -- src/db/migrations/CreateUsersTable -d dist/db/data-source.js`
+
+    - 🛠 Quando usar:
+
+      - Após alterar suas entidades (ex: adicionar campo, mudar tipo, renomear tabela etc)
+
+      - Sempre que quiser criar um novo script que represente essas mudanças no banco
+
+
+  - **"migration:run:inside": "docker exec -it nest-app npx typeorm migration:run -d dist/db/data-source.js"**: Aplica todas as migrations pendentes ao banco de dados.
+
+    - Executa o método up() de cada migration
+
+    - Atualiza a tabela migrations que registra quais já foram executadas
+
+    - Ideal para: Colocar as mudanças no banco de forma segura e versionada.
+
+    - 🛠 Quando usar:
+
+      - Depois de criar a migration e quiser aplicá-la no banco
+
+      - Após clonar um projeto com migrations e quiser rodar tudo
+  
+  - **"migration:revert:inside": "docker exec -it nest-app npx typeorm migration:revert -d dist/db/data-source.js"**: Desfaz a última migration aplicada.
+    - Executa o método down() da migration
+
+    - Remove o registro da tabela migrations
+
+    - 🛠 Quando usar:
+
+      - Se você aplicou uma migration e quer desfazer
+
+      - Durante testes, ajustes ou rollback
