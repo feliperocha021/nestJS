@@ -34,5 +34,7 @@ COPY . .
 # Expose the port that the application listens on.
 EXPOSE 3000
 
-# Run the application.
-CMD ["npm", "run", "start:dev"]
+# Isso inicia o container sem rodar nada, 
+# e você tem controle total pra iniciar o Nest como quiser
+CMD ["sleep", "infinity"]
+

@@ -13,7 +13,7 @@ services:
     build:
       context: .
     container_name: nest-app
-    command: npm run start:dev
+    command: sleep infinity
     environment:
       NODE_ENV: development
     ports:

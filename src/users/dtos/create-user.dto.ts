@@ -1,11 +1,14 @@
 import {
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
   MaxLength,
   MinLength,
 } from 'class-validator';
+
+import { Gender } from '../user.entity';
 
 export class CreateUserDto {
   @IsString({ message: 'first name should be a string value.' })
@@ -35,12 +38,14 @@ export class CreateUserDto {
   })
   email: string;
 
-  @IsString()
   @IsOptional()
   @MaxLength(20, {
     message: 'gender should have a maximum of 20 characteres.',
   })
-  gender?: string;
+  @IsEnum(Gender, {
+    message: 'gender must be either male, female, or orther',
+  })
+  gender?: Gender;
 
   @IsString()
   @IsNotEmpty()

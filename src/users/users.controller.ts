@@ -1,49 +1,19 @@
-import {
-  Controller,
-  Get,
-  Param,
-  Post,
-  Query,
-  Body,
-  ParseIntPipe,
-  DefaultValuePipe,
-  Patch,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body } from '@nestjs/common';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dtos/create-user.dto';
-import { UpateUserDto } from './dtos/update-user.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get()
-  getUsers(
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-  ) {
-    console.log(`limit: ${limit}, page:${page}`);
+  getAllUsers() {
     return this.usersService.getAllUsers();
-  }
-
-  @Get(':id')
-  getUserById(
-    @Param('id', ParseIntPipe) id: number,
-    @Query('gender') gender?: string,
-  ) {
-    return { id, name, gender };
   }
 
   @Post()
   createUser(@Body() user: CreateUserDto) {
-    // this.usersService.createUser(user);
-    console.log(user instanceof CreateUserDto);
-    return 'A new user has been created!';
-  }
-
-  @Patch()
-  updateUser(@Body() user: UpateUserDto) {
-    console.log(user);
+    this.usersService.createUser(user);
   }
 }

@@ -1,57 +1,35 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { AuthService } from 'src/auth/auth.service';
+import { Injectable } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { User } from './user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateUserDto } from './dtos/create-user.dto';
 
 @Injectable() // faz com que ele possa ser fornecido em qualquer outra classe
 export class UsersService {
   constructor(
-    @Inject(forwardRef(() => AuthService))
-    private readonly authService: AuthService,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
-  users: {
-    id: number;
-    name: string;
-    email: string;
-    gender: string;
-    isMarried: boolean;
-    password: string;
-  }[] = [
-    {
-      id: 1,
-      name: 'jhon',
-      email: 'jhon@gmail.com',
-      gender: 'male',
-      isMarried: false,
-      password: 'dopoda311',
-    },
-    {
-      id: 2,
-      name: 'marry',
-      email: 'marry@gmail.com',
-      gender: 'female',
-      isMarried: false,
-      password: 'marryzinha123',
-    },
-  ];
   getAllUsers() {
-    if (this.authService.isAuthenticated) {
-      return this.users;
+    return this.userRepository.find();
+  }
+
+  public async createUser(userDto: CreateUserDto) {
+    // Email já existe?
+    const user = await this.userRepository.findOne({
+      where: { email: userDto.email },
+    });
+    console.log(user);
+    // Tratando o erro
+    if (user) {
+      console.log('entrou');
+      return 'The user with this email already exist';
     }
-    return 'you are not logged';
-  }
 
-  getUserById(id: number) {
-    return this.users.find((el) => el.id === id);
-  }
-
-  createUser(user: {
-    id: number;
-    name: string;
-    email: string;
-    gender: string;
-    isMarried: boolean;
-    password: string;
-  }) {
-    this.users.push(user);
+    // Criando o usuário
+    let newUser = this.userRepository.create(userDto);
+    newUser = await this.userRepository.save(newUser);
+    return newUser;
   }
 }
