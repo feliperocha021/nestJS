@@ -7,6 +7,7 @@ import { TweetModule } from './tweet/tweet.module';
 import { AuthModule } from './auth/auth.module';
 import * as dotenv from 'dotenv';
 import { dataSourceOptions } from './db/data-source';
+import { ProfileModule } from './profile/profile.module';
 
 dotenv.config({ path: './.env' });
 
@@ -20,6 +21,7 @@ dotenv.config({ path: './.env' });
         ...dataSourceOptions,
       }),
     }),
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

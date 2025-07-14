@@ -49,6 +49,8 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
     depends_on:
       - postgres
     networks:
@@ -69,6 +71,7 @@ services:
 volumes:
   pgdata:
   mongodata:
+  pgadmin-data:
 
 networks:
   dev-net:

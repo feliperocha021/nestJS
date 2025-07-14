@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 export enum Gender {
   MALE = 'male',
@@ -15,22 +22,9 @@ export class User {
     type: 'varchar',
     nullable: false,
     length: 20,
+    unique: true,
   })
-  firstName: string;
-
-  @Column({
-    type: 'varchar',
-    nullable: false,
-    length: 30,
-  })
-  lastName: string;
-
-  @Column({
-    type: 'enum',
-    enum: Gender,
-    nullable: true,
-  })
-  gender: Gender;
+  username: string;
 
   @Column({
     type: 'varchar',
@@ -46,4 +40,13 @@ export class User {
     length: 16,
   })
   password: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }
