@@ -19,7 +19,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "migration:generate:inside": "npm run build && npx typeorm migration:generate",
-    "migration:run:inside": "npx typeorm migration:run -d dist/db/data-source.js",
+    "migration:run:inside": "npm run build && npx typeorm migration:run -d dist/db/data-source.js",
     "migration:revert:inside": "npx typeorm migration:revert -d dist/db/data-source.js"
   },
   "dependencies": {

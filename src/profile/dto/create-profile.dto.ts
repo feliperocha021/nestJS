@@ -6,7 +6,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { Gender } from '../../users/user.entity';
+import { Gender } from '../profile.entity';
 
 export class CreateProfileDto {
   @IsOptional()

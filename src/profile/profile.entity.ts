@@ -1,4 +1,4 @@
-import { Gender, User } from 'src/users/user.entity';
+import { User } from 'src/users/user.entity';
 import {
   Entity,
   Column,
@@ -6,6 +6,12 @@ import {
   OneToOne,
   JoinColumn,
 } from 'typeorm';
+
+export enum Gender {
+  MALE = 'male',
+  FEMALE = 'female',
+  OTHER = 'other',
+}
 
 @Entity()
 export class Profile {
@@ -29,6 +35,7 @@ export class Profile {
   @Column({
     type: 'enum',
     enum: Gender,
+    enumName: 'profile_gender_enum',
     nullable: true,
   })
   gender: Gender;
@@ -51,7 +58,8 @@ export class Profile {
   })
   profileImage: string;
 
-  @OneToOne(() => User)
+  // relações
+  @OneToOne(() => User, (user) => user.profile)
   @JoinColumn()
   user: User;
 }

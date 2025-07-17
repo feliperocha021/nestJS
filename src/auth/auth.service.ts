@@ -1,16 +1,8 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    @Inject(forwardRef(() => UsersService))
-    private readonly userService: UsersService,
-  ) {}
+  constructor() {}
 
   isAuthenticated: boolean = false;
-
-  login(email: string, pswd: string) {
-    return 'User does not exist!';
-  }
 }

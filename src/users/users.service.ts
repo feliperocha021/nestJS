@@ -16,7 +16,9 @@ export class UsersService {
   ) {}
 
   getAllUsers() {
-    return this.userRepository.find();
+    return this.userRepository.find({
+      relations: ['profile'],
+    });
   }
 
   public async createUser(userDto: CreateUserDto) {
@@ -67,5 +69,23 @@ export class UsersService {
 
     Object.assign(profile, profileDto);
     return await this.profileRepository.save(profile);
+  }
+
+  public async deleteUser(id: number) {
+    // encontrar o usuário
+    const user = await this.userRepository.findOne({
+      where: { id: id },
+      relations: ['profile'],
+    });
+
+    // deletar o perfil antes, pois ele possui uma chave estrangeira do usuário
+    if (user?.profile) {
+      await this.profileRepository.delete(user.profile.id);
+    }
+
+    // deletar o usuário
+    await this.userRepository.delete(id);
+
+    return { delete: true };
   }
 }

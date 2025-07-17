@@ -277,7 +277,7 @@ user.entity.ts ---> usersRepository.ts ---> users.service.ts ---> database
   - 🤝 Trabalho em equipe: Todos aplicam as mesmas mudanças com os mesmos scripts
 
 - **Scripts importantes no package.json**:
-  - **""migration:generate:inside": "docker exec -it nest-app npx typeorm migration:generate""**: Gera um novo arquivo de migration com base nas diferenças entre suas entidades e o estado atual do banco.
+  - **"migration:generate:inside": "docker exec -it nest-app npx typeorm migration:generate"**: Gera um novo arquivo de migration com base nas diferenças entre suas entidades e o estado atual do banco.
 
     - o docker exec -it nest-app é necessário, pois os containers estão em uma subrede definida no commpose.yaml
 
@@ -318,3 +318,21 @@ user.entity.ts ---> usersRepository.ts ---> users.service.ts ---> database
       - Se você aplicou uma migration e quer desfazer
 
       - Durante testes, ajustes ou rollback
+
+## Eager Loading
+
+- quando buscar uma entidade no banco de dados, suas entidades relacionadas serão carregadas juntamente com ela, sem termos que especificá-la explicitamente em nossa consulta
+
+## Relação bidirecional
+- realizamos a relação nas duas tabelas
+
+- uma vai possuir a chave estrangeira com:
+  @OneToOne(() => User, (user) => user.profile)
+  @JoinColumn()
+  user: User;
+
+- para criar a relação bidirecional com a outra tabela sem gerar outra chave estrangeira faça:
+@OneToOne(() => Profile, (profile) => profile.user, {
+    nullable: true,
+  })
+  profile?: Profile;

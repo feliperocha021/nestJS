@@ -16,12 +16,12 @@ dotenv.config({ path: './.env' });
     UsersModule,
     TweetModule,
     AuthModule,
+    ProfileModule,
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
         ...dataSourceOptions,
       }),
     }),
-    ProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
