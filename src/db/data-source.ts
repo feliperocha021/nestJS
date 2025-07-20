@@ -4,7 +4,10 @@ import * as dotenv from 'dotenv';
 import { Profile } from 'src/profile/profile.entity';
 import { Tweet } from 'src/tweet/tweet.entity';
 import { Hashtag } from 'src/hashtag/hashtag.entity';
-dotenv.config();
+
+const ENV = process.env.NODE_ENV;
+const envPath = ENV ? `.env.${ENV.trim()}.local` : '.env';
+dotenv.config({ path: envPath });
 
 export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',

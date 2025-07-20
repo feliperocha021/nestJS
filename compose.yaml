@@ -14,12 +14,8 @@ services:
       context: .
     container_name: nest-app
     command: sleep infinity
-    environment:
-      NODE_ENV: development
     ports:
       - "${APP_PORT}:${APP_PORT}"
-    env_file:
-      - .env
     depends_on:
       - postgres
       - mongo
@@ -32,8 +28,6 @@ services:
     image: postgres:16
     container_name: postgres
     restart: always
-    env_file:
-      - .env
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
@@ -59,8 +53,6 @@ services:
   mongo:
     image: mongo:7
     container_name: mongo
-    env_file:
-      - .env
     volumes:
       - mongodata:/data/db
     ports:

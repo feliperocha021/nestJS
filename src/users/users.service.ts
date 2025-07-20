@@ -9,7 +9,7 @@ import { ProfileService } from 'src/profile/profile.service';
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private readonly userRepository: Repository<User>,
     private readonly profileService: ProfileService,
   ) {}
 

@@ -14,7 +14,7 @@ import { UpdateTweetDto } from './dto/update-tweet.dto';
 
 @Controller('tweets')
 export class TweetController {
-  constructor(private tweetService: TweetService) {}
+  constructor(private readonly tweetService: TweetService) {}
 
   @Get(':id')
   async getTweetsByUser(@Param('id', ParseIntPipe) idUser: number) {

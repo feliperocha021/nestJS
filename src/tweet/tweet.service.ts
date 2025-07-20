@@ -11,7 +11,7 @@ import { UpdateTweetDto } from './dto/update-tweet.dto';
 export class TweetService {
   constructor(
     @InjectRepository(Tweet)
-    private tweetRepository: Repository<Tweet>,
+    private readonly tweetRepository: Repository<Tweet>,
     private readonly userService: UsersService,
     private readonly hashtagService: HashtagService,
   ) {}

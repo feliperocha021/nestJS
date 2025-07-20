@@ -13,7 +13,7 @@ import { CreateUserDto } from './dtos/create-user.dto';
 
 @Controller('users')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Get()
   getAllUsers() {
