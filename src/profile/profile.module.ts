@@ -8,5 +8,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   controllers: [ProfileController],
   providers: [ProfileService],
   imports: [TypeOrmModule.forFeature([Profile])],
+  exports: [ProfileService],
 })
 export class ProfileModule {}

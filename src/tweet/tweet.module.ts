@@ -2,13 +2,14 @@ import { Module } from '@nestjs/common';
 import { TweetService } from './tweet.service';
 import { TweetController } from './tweet.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/users/user.entity';
 import { Tweet } from './tweet.entity';
+import { UsersModule } from 'src/users/users.modules';
+import { HashtagModule } from 'src/hashtag/hashtag.module';
 
 @Module({
   controllers: [TweetController],
   providers: [TweetService],
-  imports: [TypeOrmModule.forFeature([User, Tweet])],
+  imports: [UsersModule, HashtagModule, TypeOrmModule.forFeature([Tweet])],
   exports: [TweetService],
 })
 export class TweetModule {}

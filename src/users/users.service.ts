@@ -3,16 +3,14 @@ import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';
-import { CreateProfileDto } from 'src/profile/dto/create-profile.dto';
-import { Profile } from 'src/profile/profile.entity';
+import { ProfileService } from 'src/profile/profile.service';
 
 @Injectable() // faz com que ele possa ser fornecido em qualquer outra classe
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    @InjectRepository(Profile)
-    private profileRepository: Repository<Profile>,
+    private readonly profileService: ProfileService,
   ) {}
 
   getAllUsers() {
@@ -50,25 +48,9 @@ export class UsersService {
       ...(profileDto || {}),
       user: savedUser,
     };
-    const newProfile = this.profileRepository.create(profileData);
-    await this.profileRepository.save(newProfile);
+    await this.profileService.createProfile(profileData);
 
     return savedUser;
-  }
-
-  public async updateProfile(id: number, profileDto: CreateProfileDto) {
-    // perfil existe para esse usuário?
-    const profile = await this.profileRepository.findOne({
-      where: { user: { id } },
-      relations: ['user'],
-    });
-
-    if (!profile) {
-      return 'Profile not found';
-    }
-
-    Object.assign(profile, profileDto);
-    return await this.profileRepository.save(profile);
   }
 
   public async deleteUser(id: number) {
@@ -80,12 +62,16 @@ export class UsersService {
 
     // deletar o perfil antes, pois ele possui uma chave estrangeira do usuário
     if (user?.profile) {
-      await this.profileRepository.delete(user.profile.id);
+      await this.profileService.deleteProfile(user.profile.id);
     }
 
     // deletar o usuário
     await this.userRepository.delete(id);
 
     return { delete: true };
+  }
+
+  public async findUserById(id: number) {
+    return await this.userRepository.findOneBy({ id });
   }
 }

@@ -3,6 +3,7 @@ import { User } from '../users/user.entity';
 import * as dotenv from 'dotenv';
 import { Profile } from 'src/profile/profile.entity';
 import { Tweet } from 'src/tweet/tweet.entity';
+import { Hashtag } from 'src/hashtag/hashtag.entity';
 dotenv.config();
 
 export const dataSourceOptions: DataSourceOptions = {
@@ -12,7 +13,7 @@ export const dataSourceOptions: DataSourceOptions = {
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
-  entities: [User, Profile, Tweet],
+  entities: [User, Profile, Tweet, Hashtag],
   migrations: ['dist/db/migrations/*.js'],
   synchronize: false,
 };

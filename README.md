@@ -336,3 +336,29 @@ user.entity.ts ---> usersRepository.ts ---> users.service.ts ---> database
     nullable: true,
   })
   profile?: Profile;
+
+## Relacionamento muitos p/ muitos
+
+- Vamos usar a tabela de tweet e a de hashtag como exemplo. Um tweet pode possui uma ou mais hashtags, assim como uma hashtag pode ser usado em um ou mais tweets.
+- A chave estrangeira não devem ser armazenada em nenhuma das duas tabelas
+- Deve-se criar uma tabela de junção que contém o relacionamento entre essas tabelas armazenando seus ids
+- Lembre-se que ele pode ser tanto uni como bi direcional
+
+## Bi-Direcional Many to Many Relation
+- Como está o relacionamento sendo uni-direcional:
+tweet.entity:
+    @ManyToMany(() => Hashtag, { cascade: true })
+  @JoinTable()
+  hashtags: Hashtag[];
+
+não há nada hashtags.entity
+
+- Tornando a relação bi-direcional:
+tweet.entity:
+  @ManyToMany(() => Hashtag, (hashtag) => hashtag.tweets, { cascade: true })
+  @JoinTable()
+  hashtags: Hashtag[];
+
+hashtag.entity:
+  @ManyToMany(() => Tweet, (tweet) => tweet.hashtags)
+  tweets: Tweet[];
