@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTweetDto } from './dto/create-tweet.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Tweet } from './tweet.entity';
@@ -30,7 +30,7 @@ export class TweetService {
     const user = await this.userService.findUserById(id);
 
     if (!user) {
-      return 'user not found';
+      throw new NotFoundException(`User with id ${id} is not found`);
     }
 
     // selecionando todas as hashtags

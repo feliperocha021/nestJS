@@ -362,3 +362,9 @@ tweet.entity:
 hashtag.entity:
   @ManyToMany(() => Tweet, (tweet) => tweet.hashtags)
   tweets: Tweet[];
+
+## Exception Handling
+
+- uma exceção representa uma condição de erro ou um resultado não esperado que interrompe o fluxo normal de um programa.
+
+- O nest já possui algumas exceções integradas a parti do `HttpException from @nestjs/common`

@@ -16,6 +16,10 @@ import { Profile } from './profile/profile.entity';
 import { Tweet } from './tweet/tweet.entity';
 import { Hashtag } from './hashtag/hashtag.entity';
 
+import appConfig from './config/app.config';
+import databaseConfig from './config/database.config';
+import envValidator from './config/env.validation';
+
 const ENV = process.env.NODE_ENV;
 const envPath = ENV ? `.env.${ENV.trim()}.local` : '.env';
 
@@ -28,17 +32,19 @@ const envPath = ENV ? `.env.${ENV.trim()}.local` : '.env';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: [envPath],
+      load: [appConfig, databaseConfig],
+      validationSchema: envValidator,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         type: 'postgres',
-        host: config.get<string>('POSTGRES_HOST'),
-        port: parseInt(config.get<string>('POSTGRES_PORT') || '5432'),
-        username: config.get<string>('POSTGRES_USER'),
-        password: config.get<string>('POSTGRES_PASSWORD'),
-        database: config.get<string>('POSTGRES_DB'),
+        host: config.get<string>('database.host'),
+        port: parseInt(config.get<string>('database.port') || '5432'),
+        username: config.get<string>('database.username'),
+        password: config.get<string>('database.password'),
+        database: config.get<string>('database.database'),
         entities: [User, Profile, Tweet, Hashtag],
         migrations: ['dist/db/migrations/*.js'],
         synchronize: false,

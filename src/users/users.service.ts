@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, RequestTimeoutException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,10 +13,20 @@ export class UsersService {
     private readonly profileService: ProfileService,
   ) {}
 
-  getAllUsers() {
-    return this.userRepository.find({
-      relations: ['profile'],
-    });
+  public async getAllUsers() {
+    try {
+      return await this.userRepository.find({
+        relations: ['profile'],
+      });
+    } catch (error) {
+      console.log(error);
+      throw new RequestTimeoutException(
+        'An error has ocurred. Please try again later.',
+        {
+          description: 'Could not connect to database.',
+        },
+      );
+    }
   }
 
   public async createUser(userDto: CreateUserDto) {

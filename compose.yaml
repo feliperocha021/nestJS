@@ -31,7 +31,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+      - "${DB_PORT}:${DB_PORT}"
     networks:
       - dev-net
   
@@ -86,8 +86,8 @@ networks:
 #     volumes:
 #       - db-data:/var/lib/postgresql/data
 #     environment:
-#       - POSTGRES_DB=example
-#       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+#       - DB_DB=example
+#       - DB_PASSWORD_FILE=/run/secrets/db-password
 #     expose:
 #       - 5432
 #     healthcheck:
