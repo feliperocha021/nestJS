@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateTweetDto } from './dto/create-tweet.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Tweet } from './tweet.entity';
@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
 import { HashtagService } from 'src/hashtag/hashtag.service';
 import { UpdateTweetDto } from './dto/update-tweet.dto';
+import { PaginationQueryDto } from 'src/common/pagination/dto/pagination-query.dto';
 
 @Injectable()
 export class TweetService {
@@ -16,22 +17,29 @@ export class TweetService {
     private readonly hashtagService: HashtagService,
   ) {}
 
-  public async getTweetsByUser(userId: number) {
+  public async getTweetsByUser(
+    userId: number,
+    paginationDto: PaginationQueryDto,
+  ) {
+    // verificando usuário
+    await this.userService.findUserById(userId);
+
+    //consulta
+    const page = paginationDto.page ?? 1;
+    const limit = paginationDto.limit ?? 10;
+
     return await this.tweetRepository.find({
       where: {
         user: { id: userId },
       },
-      relations: ['user', 'hashtags'],
+      skip: (page - 1) * limit,
+      take: limit,
     });
   }
 
   public async createTweetOfUser(id: number, tweetDto: CreateTweetDto) {
     // verificando usuário
     const user = await this.userService.findUserById(id);
-
-    if (!user) {
-      throw new NotFoundException(`User with id ${id} is not found`);
-    }
 
     // selecionando todas as hashtags
     const hashtags = tweetDto.hashtags

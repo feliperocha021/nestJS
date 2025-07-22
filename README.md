@@ -368,3 +368,25 @@ hashtag.entity:
 - uma exceção representa uma condição de erro ou um resultado não esperado que interrompe o fluxo normal de um programa.
 
 - O nest já possui algumas exceções integradas a parti do `HttpException from @nestjs/common`
+
+- **HttpException** é uma classe fundamental para lidar com erros HTTP e fornecer respostas de erros padronizadas
+
+- exemplo de uso:
+  throw new HttpException(
+    {
+      status: HttpStatus.NOT_FOUND,
+      error: `The user with id ${id} was not found`,
+    },
+    HttpStatus.NOT_FOUND,
+    {
+      description: `The user with id ${id} was not found in user table`,
+    },
+  );
+
+o último objeto não é enviado para o cliente. Esse oobjeto é usado como logs para ajudar desenvolvedores
+
+Você pode criar sua própria classe de exceção a partir do HttpException
+
+## Pagination
+
+- usado para dividr grande conjuntos de dados em páginas menores melhorando o desempenho, experiencia de usuário e reduzindo a carga do servidor

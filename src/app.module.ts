@@ -10,6 +10,7 @@ import { TweetModule } from './tweet/tweet.module';
 import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import { HashtagModule } from './hashtag/hashtag.module';
+import { PaginationModule } from './common/pagination/dto/pagination.module';
 
 import { User } from './users/user.entity';
 import { Profile } from './profile/profile.entity';
@@ -29,6 +30,7 @@ const envPath = ENV ? `.env.${ENV.trim()}.local` : '.env';
     TweetModule,
     AuthModule,
     ProfileModule,
+    PaginationModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: [envPath],

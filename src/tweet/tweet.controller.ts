@@ -7,18 +7,23 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { TweetService } from './tweet.service';
 import { CreateTweetDto } from './dto/create-tweet.dto';
 import { UpdateTweetDto } from './dto/update-tweet.dto';
+import { PaginationQueryDto } from 'src/common/pagination/dto/pagination-query.dto';
 
 @Controller('tweets')
 export class TweetController {
   constructor(private readonly tweetService: TweetService) {}
 
   @Get(':id')
-  async getTweetsByUser(@Param('id', ParseIntPipe) idUser: number) {
-    return await this.tweetService.getTweetsByUser(idUser);
+  async getTweetsByUser(
+    @Param('id', ParseIntPipe) idUser: number,
+    @Query() paginationDto: PaginationQueryDto,
+  ) {
+    return await this.tweetService.getTweetsByUser(idUser, paginationDto);
   }
 
   @Post(':id')

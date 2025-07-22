@@ -16,8 +16,13 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  getAllUsers() {
+  async getAllUsers() {
     return this.usersService.getAllUsers();
+  }
+
+  @Get(':id')
+  async getUserById(@Param('id', ParseIntPipe) idUser: number) {
+    return this.usersService.findUserById(idUser);
   }
 
   @Post()
