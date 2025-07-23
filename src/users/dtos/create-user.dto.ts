@@ -4,7 +4,7 @@ import {
   IsOptional,
   IsString,
   MaxLength,
-  MinLength,
+  Matches,
 } from 'class-validator';
 import { CreateProfileDto } from 'src/profile/dto/create-profile.dto';
 import { Type } from 'class-transformer';
@@ -27,12 +27,13 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty()
-  @MinLength(3, {
-    message: 'password name should have a minimum of 3 characteres.',
-  })
-  @MaxLength(16, {
-    message: 'gender should have a maximum of 16 characteres.',
-  })
+  @Matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()[\]{}\-_=+\\|;:'",.<>/?]).{8,16}$/,
+    {
+      message:
+        'A senha deve ter entre 8 e 16 caracteres e conter pelo menos uma letra maiúscula, uma minúscula, um número e um símbolo.',
+    },
+  )
   password: string;
 
   @IsOptional()

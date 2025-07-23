@@ -1,7 +1,10 @@
 import {
+  forwardRef,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
+  InternalServerErrorException,
   RequestTimeoutException,
 } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -10,20 +13,34 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { ProfileService } from 'src/profile/profile.service';
 import { UserAlreadyExistsException } from 'src/customExceptions/user-arealdy-exists.exception';
+import { PaginationQueryDto } from 'src/common/pagination/dto/pagination-query.dto';
+import { Paginated } from 'src/common/pagination/dto/pagination.interface';
+import { PaginationProvider } from 'src/common/pagination/dto/pagination.provider';
+import { HashingProvider } from 'src/auth/provider/hashing.provider';
 
 @Injectable() // faz com que ele possa ser fornecido em qualquer outra classe
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+
     private readonly profileService: ProfileService,
+    private readonly paginationProvider: PaginationProvider,
+
+    @Inject(forwardRef(() => HashingProvider))
+    private readonly hashingProvider: HashingProvider,
   ) {}
 
-  public async getAllUsers() {
+  public async getAllUsers(
+    paginationDto: PaginationQueryDto,
+  ): Promise<Paginated<User>> {
     try {
-      return await this.userRepository.find({
-        relations: ['profile'],
-      });
+      return await this.paginationProvider.paginateQuery(
+        paginationDto,
+        this.userRepository,
+        undefined,
+        ['profile'],
+      );
     } catch (error) {
       if (error instanceof Error && 'code' in error) {
         if (error.code === 'ENCONNREFUSED') {
@@ -33,6 +50,9 @@ export class UsersService {
           );
         }
       }
+      throw new InternalServerErrorException(
+        'Unexpected error while retrieving users.',
+      );
     }
   }
 
@@ -59,7 +79,10 @@ export class UsersService {
       const { profile: profileDto, ...userData } = userDto;
 
       // Criando o usuário
-      const newUser = this.userRepository.create(userData);
+      const newUser = this.userRepository.create({
+        ...userData,
+        password: await this.hashingProvider.hashPassword(userData.password),
+      });
       const savedUser = await this.userRepository.save(newUser);
 
       // Criando perfil vazio vinculado ao usuário

@@ -390,3 +390,21 @@ Você pode criar sua própria classe de exceção a partir do HttpException
 ## Pagination
 
 - usado para dividr grande conjuntos de dados em páginas menores melhorando o desempenho, experiencia de usuário e reduzindo a carga do servidor
+
+## Authentication
+
+- **Hashing of a password**: é o processo de transformar a senha em um a sequência aparentemente aleatória de caracteres de comprimento fixo usando um algoritmo matemático chamado função hash
+- **Características**:
+  - Tamanho fixo independente do tamanho da senha;
+  - Função unidirecional, ou seja, após obter o hash não é possível voltar a senha de entrada
+  - resistente a colisões de hash
+
+- **Password salting**: é uma técnica de segurança usada durante o processo de hash e envolve adcionar uma sequência de caracteres exclusiva gerada aleatoriamente (conhecida como salt) antes de ser criptografada, tornando difícil extrair uma senha simple de hash
+
+- Exemplo de hash:
+$2b$10$a7b3c8d9e0f1a2b3c4d5e.f6g7h8i9j0kLaMbNcOdPeQfRgShijKlMnOpQr
+
+**2b**: identificador do algoritmo
+**10**: fator de custo (número de rodadas no processo)
+**a7b3c8d9e0f1a2b3c4d5e**: salt string
+**f6g7h8i9j0kLaMbNcOdPeQfRgShijKlMnOpQr**: hash password
