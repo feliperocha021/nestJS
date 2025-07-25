@@ -5,6 +5,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   RequestTimeoutException,
 } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -43,7 +44,7 @@ export class UsersService {
       );
     } catch (error) {
       if (error instanceof Error && 'code' in error) {
-        if (error.code === 'ENCONNREFUSED') {
+        if (error.code === 'ECONNREFUSED') {
           throw new RequestTimeoutException(
             'An error has occurred. Please try again later.',
             { description: 'Could not connect to database.' },
@@ -95,7 +96,7 @@ export class UsersService {
       return savedUser;
     } catch (error) {
       if (error instanceof Error && 'code' in error) {
-        if (error.code === 'ENCONNREFUSED') {
+        if (error.code === 'ECONNREFUSED') {
           throw new RequestTimeoutException(
             'An error has ocurred. Please try again later.',
             { description: 'Could not connect to database.' },
@@ -140,5 +141,25 @@ export class UsersService {
       );
     }
     return user;
+  }
+
+  public async findUserByUsername(username: string) {
+    try {
+      const user = await this.userRepository.findOneBy({ username });
+      if (!user) {
+        throw new NotFoundException(`Username "${username}" does not exist`);
+      }
+      return user;
+    } catch (error) {
+      if (error instanceof Error && 'code' in error) {
+        if (error.code === 'ECONNREFUSED') {
+          throw new RequestTimeoutException(
+            'An error has ocurred. Please try again later.',
+            { description: 'Could not connect to database.' },
+          );
+        }
+      }
+      throw error;
+    }
   }
 }

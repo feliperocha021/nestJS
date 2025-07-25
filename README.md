@@ -408,3 +408,48 @@ $2b$10$a7b3c8d9e0f1a2b3c4d5e.f6g7h8i9j0kLaMbNcOdPeQfRgShijKlMnOpQr
 **10**: fator de custo (número de rodadas no processo)
 **a7b3c8d9e0f1a2b3c4d5e**: salt string
 **f6g7h8i9j0kLaMbNcOdPeQfRgShijKlMnOpQr**: hash password
+
+## JWT
+
+- Json Web Token é um padrão aberto que define uma maneira compacta e independente de transmitir infomações com segurança entre as partes com json e essas informações podem ser verificadas pelo token que foi assinado digitalmente.
+
+- Durante o login se a senha do usuário for validada um token jwt é criado usando uma chave secreta e enviado na resposta para o cliente que armazenará nos cookies ou no armazenamento local
+
+- Esse token jwt servirá como uma  prova de identidade do usuário conectado e sempre que uma rota protegida for acessada o token jwt será enviado para validar o usuário e dar acesso a rota.
+
+- OBS: Lembre-se que o servidor não armazena o estado do usuário, pois não armazena o token jwt. E todas as solicitações e respostas devem seguir o protocolo https.
+
+- Exemplo de token jwt: eyJhbGciOiJIUzI1NiIsInR5cC
+I6IkpXVCJ9.eyJzdWIiOiIxMjM
+ONTY3ODkwIiwibmFtZSI6Ikpva
+G4gRG9lIiwiaWF0IjoxNTE2MjM
+5MDIyfQ.Sf1KxwRJSMeKKF2QT4
+fwpMeJf36P0k6yJV_adQssw5c
+
+- Cada ponto no token divide-o nas seguintes partes:
+- Header: 
+{
+  alg": "HS256", 
+  "typ": "JWT
+}
+
+- Payload: contém as declarações que representam dados sobre o usuário ou contexto da autenticação. Não deve conter dados sensíveis, como senhas
+
+{
+  "sub": "1234567890",
+  "name": "John Doe", 
+  "iat": 1516239022
+}
+- sub	Subject: Identificador único do usuário	"1234567890"
+- name	Nome do usuário	"John Doe"
+- iat	Issued At: Data/hora em que o token foi emitido	1516239022 (Unix timestamp)
+
+- Signature: é a parte do token responsável por validar sua autenticidade e integridade. Ela funciona como um selo digital, que garante que ninguém alterou o conteúdo (header e payload) do token desde que ele foi gerado.
+
+  HMACSHA256(
+    base64UrlEncode (header) + "." +
+    base64UrlEncode(payload),
+    your-256-bit-secret 
+  ) secret base64 encoded
+
+- O servidor verifica se o token Jwt recebido não foi alterado utilizando o header, payload e a chave secreta definida criando uma signature de teste e compararando-a com a signature recebida pelo token jwt.
