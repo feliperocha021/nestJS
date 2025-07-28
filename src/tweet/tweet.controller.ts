@@ -13,25 +13,26 @@ import { TweetService } from './tweet.service';
 import { CreateTweetDto } from './dto/create-tweet.dto';
 import { UpdateTweetDto } from './dto/update-tweet.dto';
 import { PaginationQueryDto } from 'src/common/pagination/dto/pagination-query.dto';
+import { ActiveUser } from 'src/auth/decorators/active-user.decorator';
 
 @Controller('tweets')
 export class TweetController {
   constructor(private readonly tweetService: TweetService) {}
 
-  @Get(':id')
+  @Get()
   async getTweetsByUser(
-    @Param('id', ParseIntPipe) idUser: number,
+    @ActiveUser('sub') userId: number,
     @Query() paginationDto: PaginationQueryDto,
   ) {
-    return await this.tweetService.getTweetsByUser(idUser, paginationDto);
+    return await this.tweetService.getTweetsByUser(userId, paginationDto);
   }
 
-  @Post(':id')
+  @Post()
   async createTweetOfUser(
     @Body() tweet: CreateTweetDto,
-    @Param('id', ParseIntPipe) idUser: number,
+    @ActiveUser('sub') userId: number,
   ) {
-    return await this.tweetService.createTweetOfUser(idUser, tweet);
+    return await this.tweetService.createTweetOfUser(userId, tweet);
   }
 
   @Patch(':id')

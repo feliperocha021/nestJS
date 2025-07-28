@@ -453,3 +453,14 @@ fwpMeJf36P0k6yJV_adQssw5c
   ) secret base64 encoded
 
 - O servidor verifica se o token Jwt recebido não foi alterado utilizando o header, payload e a chave secreta definida criando uma signature de teste e compararando-a com a signature recebida pelo token jwt.
+
+## Guards
+- é uma clase anotada com @Injectable() que implementaa a interface CanActivate.
+- Seu ojetivo principal é determinar se uma solicitação deve ser tratada pelo manipulador de rota
+
+## Token Refresh
+- Permitem gerar token de acesso (tempo de expiração menor) automaticamente sem que o usuário realize login novamente.
+- São gerados da mesma forma que um token de acesso, mas seu tempo de expiração é maior e seu payload é menor.
+- No frontend, quando o token de acesso está prestes à expirar um novo token de acesso é solicitado utilizando o token refresh sem que o usuário perceba.
+- Mantém o token de acesso com vida curta, reduzindo o impacto se ele for roubado.
+- O refresh token fica armazenado com mais proteção (ex: em httpOnly cookies), dificultando acesso indevido.

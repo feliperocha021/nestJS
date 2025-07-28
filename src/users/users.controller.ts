@@ -1,19 +1,20 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Param,
   ParseIntPipe,
   Delete,
   Query,
+  //UseGuards,
 } from '@nestjs/common';
 
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dtos/create-user.dto';
 import { PaginationQueryDto } from 'src/common/pagination/dto/pagination-query.dto';
+//import { AuthorizeGuard } from 'src/auth/guards/authorize.guard';
 
 @Controller('users')
+//@UseGuards(AuthorizeGuard) // todas as rotas protegidas(requerem autenticação)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

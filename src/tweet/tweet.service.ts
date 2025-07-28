@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  RequestTimeoutException,
+} from '@nestjs/common';
 import { CreateTweetDto } from './dto/create-tweet.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Tweet } from './tweet.entity';
@@ -24,74 +29,131 @@ export class TweetService {
     userId: number,
     paginationDto: PaginationQueryDto,
   ): Promise<Paginated<Tweet>> {
-    // verificando usuário
-    await this.userService.findUserById(userId);
+    try {
+      // verificando usuário
+      await this.userService.findUserById(userId);
 
-    //consulta
-    return await this.paginationProvider.paginateQuery(
-      paginationDto,
-      this.tweetRepository,
-      { user: { id: userId } },
-    );
+      //consulta
+      return await this.paginationProvider.paginateQuery(
+        paginationDto,
+        this.tweetRepository,
+        { user: { id: userId } },
+      );
+    } catch (error) {
+      if (error instanceof Error && 'code' in error) {
+        if (error.code === 'ECONNREFUSED') {
+          throw new RequestTimeoutException(
+            'An error has ocurred. Please try again later.',
+            { description: 'Could not connect to database.' },
+          );
+        }
+      }
+      throw error;
+    }
   }
 
-  public async createTweetOfUser(id: number, tweetDto: CreateTweetDto) {
-    // verificando usuário
-    const user = await this.userService.findUserById(id);
+  public async createTweetOfUser(userId: number, tweetDto: CreateTweetDto) {
+    try {
+      // verificando usuário
+      const user = await this.userService.findUserById(userId);
 
-    // selecionando todas as hashtags
-    const hashtags = tweetDto.hashtags
-      ? await this.hashtagService.findHashtags(tweetDto.hashtags)
-      : [];
+      // selecionando todas as hashtags
+      const hashtags = tweetDto.hashtags
+        ? await this.hashtagService.findHashtags(tweetDto.hashtags)
+        : undefined;
 
-    // criando tweet de usuário
-    const tweetData = {
-      ...tweetDto,
-      user,
-      hashtags,
-    };
+      if (tweetDto.hashtags?.length !== hashtags?.length) {
+        throw new BadRequestException();
+      }
 
-    const newTweet = this.tweetRepository.create(tweetData);
-    const saveTweet = await this.tweetRepository.save(newTweet);
+      // criando tweet de usuário
+      const tweetData = {
+        ...tweetDto,
+        user,
+        hashtags,
+      };
 
-    return saveTweet;
+      const newTweet = this.tweetRepository.create(tweetData);
+      const saveTweet = await this.tweetRepository.save(newTweet);
+
+      return saveTweet;
+    } catch (error) {
+      if (error instanceof Error && 'code' in error) {
+        if (error.code === 'ECONNREFUSED') {
+          throw new RequestTimeoutException(
+            'An error has ocurred. Please try again later.',
+            { description: 'Could not connect to database.' },
+          );
+        }
+      }
+      throw error;
+    }
   }
 
   public async updateTweet(id: number, tweetDto: UpdateTweetDto) {
-    // verificando se o tweet existe
-    const tweet = await this.tweetRepository.findOneBy({ id });
-    if (!tweet) {
-      return 'tweet not found';
+    try {
+      // verificando se o tweet existe
+      const tweet = await this.tweetRepository.findOneBy({ id });
+      if (!tweet) {
+        throw new NotFoundException(`Tweet with id ${id} does not exist`);
+      }
+
+      // selecionando todas as hashtags
+      const hashtags = tweetDto.hashtags
+        ? await this.hashtagService.findHashtags(tweetDto.hashtags)
+        : [];
+
+      if (tweetDto.hashtags?.length !== hashtags?.length) {
+        throw new BadRequestException();
+      }
+
+      // atualizando tweet
+      tweet.text = tweetDto.text ?? tweet.text;
+      tweet.image = tweetDto.image ?? tweet.image;
+      // hashtags será vazio se o usuário quiser removê-la
+      tweet.hashtags = hashtags;
+
+      return await this.tweetRepository.save(tweet);
+    } catch (error) {
+      if (error instanceof Error && 'code' in error) {
+        if (error.code === 'ECONNREFUSED') {
+          throw new RequestTimeoutException(
+            'An error has ocurred. Please try again later.',
+            { description: 'Could not connect to database.' },
+          );
+        }
+      }
+      throw error;
     }
-
-    // selecionando todas as hashtags
-    const hashtags = tweetDto.hashtags
-      ? await this.hashtagService.findHashtags(tweetDto.hashtags)
-      : [];
-
-    // atualizando tweet
-    tweet.text = tweetDto.text ?? tweet.text;
-    tweet.image = tweetDto.image ?? tweet.image;
-    tweet.hashtags = hashtags;
-
-    return await this.tweetRepository.save(tweet);
   }
 
   public async deleteTweet(id: number) {
-    const tweet = await this.tweetRepository.findOne({
-      where: { id: id },
-      relations: ['hashtags'],
-    });
-    if (!tweet) {
-      return 'tweet not found';
+    try {
+      const tweet = await this.tweetRepository.findOne({
+        where: { id: id },
+        relations: ['hashtags'],
+      });
+      if (!tweet) {
+        throw new NotFoundException(`Tweet with id ${id} does not exist`);
+      }
+
+      // SEM CASCADE
+      // tweet.hashtags = [];
+      // await this.tweetRepository.save(tweet);
+      // return await this.tweetRepository.delete(tweet);
+
+      // COM CASCADE
+      return await this.tweetRepository.remove(tweet);
+    } catch (error) {
+      if (error instanceof Error && 'code' in error) {
+        if (error.code === 'ECONNREFUSED') {
+          throw new RequestTimeoutException(
+            'An error has ocurred. Please try again later.',
+            { description: 'Could not connect to database.' },
+          );
+        }
+      }
+      throw error;
     }
-
-    // SEM CASCADE
-    // tweet.hashtags = [];
-    // await this.tweetRepository.save(tweet);
-    // return await this.tweetRepository.delete(tweet);
-
-    // COM CASCADE
-    return await this.tweetRepository.remove(tweet);
   }
 }

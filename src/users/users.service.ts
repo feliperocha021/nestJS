@@ -1,7 +1,5 @@
 import {
   forwardRef,
-  HttpException,
-  HttpStatus,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -126,21 +124,25 @@ export class UsersService {
   }
 
   public async findUserById(id: number) {
-    const user = await this.userRepository.findOneBy({ id });
+    try {
+      const user = await this.userRepository.findOneBy({ id });
 
-    if (!user) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_FOUND,
-          error: `The user with id ${id} was not found`,
-        },
-        HttpStatus.NOT_FOUND,
-        {
-          description: `The user with id ${id} was not found in user table`,
-        },
-      );
+      if (!user) {
+        throw new NotFoundException(`The user with id ${id} was not found`);
+      }
+
+      return user;
+    } catch (error) {
+      if (error instanceof Error && 'code' in error) {
+        if (error.code === 'ECONNREFUSED') {
+          throw new RequestTimeoutException(
+            'An error has ocurred. Please try again later.',
+            { description: 'Could not connect to database.' },
+          );
+        }
+      }
+      throw error;
     }
-    return user;
   }
 
   public async findUserByUsername(username: string) {

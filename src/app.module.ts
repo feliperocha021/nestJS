@@ -21,6 +21,11 @@ import appConfig from './config/app.config';
 import databaseConfig from './config/database.config';
 import envValidator from './config/env.validation';
 
+import { APP_GUARD } from '@nestjs/core';
+import { AuthorizeGuard } from './auth/guards/authorize.guard';
+import authConfig from 'src/auth/config/auth.config';
+import { JwtModule } from '@nestjs/jwt';
+
 const ENV = process.env.NODE_ENV;
 const envPath = ENV ? `.env.${ENV.trim()}.local` : '.env';
 
@@ -31,6 +36,8 @@ const envPath = ENV ? `.env.${ENV.trim()}.local` : '.env';
     AuthModule,
     ProfileModule,
     PaginationModule,
+    ConfigModule.forFeature(authConfig),
+    JwtModule.registerAsync(authConfig.asProvider()),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: [envPath],
@@ -55,6 +62,12 @@ const envPath = ENV ? `.env.${ENV.trim()}.local` : '.env';
     HashtagModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthorizeGuard,
+    },
+  ],
 })
 export class AppModule {}
