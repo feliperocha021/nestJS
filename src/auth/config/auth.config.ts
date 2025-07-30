@@ -9,4 +9,11 @@ export default registerAs('auth', () => ({
   ),
   audience: process.env.JWT_TOKEN_AUDIENCE,
   issuer: process.env.JWT_TOKEN_ISSUER,
+  cookie: {
+    name: 'refreshToken',
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict' as const,
+    path: '/auth/refresh-token',
+  },
 }));

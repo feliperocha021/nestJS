@@ -23,6 +23,6 @@ import { JwtModule } from '@nestjs/jwt';
     ConfigModule.forFeature(authConfig),
     JwtModule.registerAsync(authConfig.asProvider()),
   ],
-  exports: [AuthService, HashingProvider],
+  exports: [AuthService, HashingProvider, JwtModule, ConfigModule],
 })
 export class AuthModule {}

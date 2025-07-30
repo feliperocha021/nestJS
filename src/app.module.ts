@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -23,8 +23,6 @@ import envValidator from './config/env.validation';
 
 import { APP_GUARD } from '@nestjs/core';
 import { AuthorizeGuard } from './auth/guards/authorize.guard';
-import authConfig from 'src/auth/config/auth.config';
-import { JwtModule } from '@nestjs/jwt';
 
 const ENV = process.env.NODE_ENV;
 const envPath = ENV ? `.env.${ENV.trim()}.local` : '.env';
@@ -36,8 +34,6 @@ const envPath = ENV ? `.env.${ENV.trim()}.local` : '.env';
     AuthModule,
     ProfileModule,
     PaginationModule,
-    ConfigModule.forFeature(authConfig),
-    JwtModule.registerAsync(authConfig.asProvider()),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: [envPath],
@@ -70,4 +66,9 @@ const envPath = ENV ? `.env.${ENV.trim()}.local` : '.env';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // Garante aplicação do cookie-parser em todas as rotas
+    consumer.apply().forRoutes('*');
+  }
+}
