@@ -18,7 +18,7 @@ services:
       - "${APP_PORT}:${APP_PORT}"
     depends_on:
       - postgres
-      - mongo
+      - redis-stack
     volumes:
       - .:/usr/src/app
     networks:
@@ -49,21 +49,24 @@ services:
       - postgres
     networks:
       - dev-net
-
-  mongo:
-    image: mongo:7
-    container_name: mongo
-    volumes:
-      - mongodata:/data/db
+  
+  redis-stack:
+    image: redis/redis-stack:latest
+    container_name: redis-stack
     ports:
-      - "${MONGO_PORT}:${MONGO_PORT}"
+      - "${REDIS_PORT}:6379"
+      - "${REDIS_INSIGHT_PORT}:8001"
+    env_file:
+      - .env.development.local
+    volumes:
+      - redis-stack-data:/data
     networks:
       - dev-net
-  
+
 volumes:
   pgdata:
-  mongodata:
   pgadmin-data:
+  redis-stack-data:
 
 networks:
   dev-net:
