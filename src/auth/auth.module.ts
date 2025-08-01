@@ -2,6 +2,12 @@ import { forwardRef, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
+
 import { ConfigModule } from '@nestjs/config';
 import authConfig from './config/auth.config';
 import { UsersModule } from 'src/users/users.modules';
@@ -13,6 +19,10 @@ import { JwtModule } from '@nestjs/jwt';
   controllers: [AuthController],
   providers: [
     AuthService,
+    JwtStrategy,
+    JwtRefreshStrategy,
+    JwtAuthGuard,
+    JwtRefreshGuard,
     {
       provide: HashingProvider,
       useClass: BcryptProvider,
@@ -21,8 +31,9 @@ import { JwtModule } from '@nestjs/jwt';
   imports: [
     forwardRef(() => UsersModule),
     ConfigModule.forFeature(authConfig),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync(authConfig.asProvider()),
   ],
-  exports: [AuthService, HashingProvider, JwtModule, ConfigModule],
+  exports: [AuthService, HashingProvider, JwtModule],
 })
 export class AuthModule {}

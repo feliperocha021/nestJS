@@ -22,7 +22,7 @@ import databaseConfig from './config/database.config';
 import envValidator from './config/env.validation';
 
 import { APP_GUARD } from '@nestjs/core';
-import { AuthorizeGuard } from './auth/guards/authorize.guard';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 const ENV = process.env.NODE_ENV;
 const envPath = ENV ? `.env.${ENV.trim()}.local` : '.env';
@@ -62,7 +62,7 @@ const envPath = ENV ? `.env.${ENV.trim()}.local` : '.env';
     AppService,
     {
       provide: APP_GUARD,
-      useClass: AuthorizeGuard,
+      useClass: JwtAuthGuard,
     },
   ],
 })

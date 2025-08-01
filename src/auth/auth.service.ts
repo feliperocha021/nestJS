@@ -15,7 +15,7 @@ import { HashingProvider } from './provider/hashing.provider';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/user.entity';
 import { UserPayload } from './interfaces/user-payload.interface';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { RefreshTokenPayloadDto } from './dto/refresh-token-payload.dto';
 
 @Injectable()
 export class AuthService {
