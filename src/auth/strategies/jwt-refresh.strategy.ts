@@ -1,7 +1,6 @@
-// src/auth/strategies/jwt-refresh.strategy.ts
 import { Injectable, Inject } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, StrategyOptions, ExtractJwt } from 'passport-jwt'; // ✔️ Usando StrategyOptions aqui
+import { Strategy, StrategyOptions, ExtractJwt } from 'passport-jwt';
 import { ConfigType } from '@nestjs/config';
 import authConfig from '../config/auth.config';
 import { cookieExtractor } from '../utils/cookie-extractor';

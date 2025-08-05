@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -66,9 +66,4 @@ const envPath = ENV ? `.env.${ENV.trim()}.local` : '.env';
     },
   ],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    // Garante aplicação do cookie-parser em todas as rotas
-    consumer.apply().forRoutes('*');
-  }
-}
+export class AppModule {}

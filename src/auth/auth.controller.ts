@@ -16,12 +16,14 @@ import { AllowAnonymous } from './decorators/allow-anonymous.decorator';
 import { ConfigType } from '@nestjs/config';
 import authConfig from './config/auth.config';
 import { Response, Request } from 'express';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
-import { RefreshTokenPayloadDto } from './dto/refresh-token-payload.dto';
+import { RefreshTokenPayload } from './interfaces/user-payload.interface';
+import {
+  setRefreshTokenCookie,
+  clearRefreshTokenCookies,
+} from './utils/handler-cookies';
 
 @Controller('auth')
-@UseGuards(JwtAuthGuard)
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
@@ -37,13 +39,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const { token, refreshToken } = await this.authService.login(dto);
-    res.cookie(this.config.cookie.name, refreshToken, {
-      httpOnly: this.config.cookie.httpOnly,
-      secure: this.config.cookie.secure,
-      sameSite: this.config.cookie.sameSite,
-      path: this.config.cookie.path,
-      maxAge: this.config.refreshTokenExpiresIn * 1000,
-    });
+    setRefreshTokenCookie(res, refreshToken);
     return { token };
   }
 
@@ -54,14 +50,19 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const { token, refreshToken } = await this.authService.signup(dto);
-    res.cookie(this.config.cookie.name, refreshToken, {
-      httpOnly: this.config.cookie.httpOnly,
-      secure: this.config.cookie.secure,
-      sameSite: this.config.cookie.sameSite,
-      path: this.config.cookie.path,
-      maxAge: this.config.refreshTokenExpiresIn * 1000,
-    });
+    setRefreshTokenCookie(res, refreshToken);
     return { token };
+  }
+
+  @UseGuards(JwtRefreshGuard)
+  @Post('logout')
+  @HttpCode(204)
+  public async logout(
+    @Req() req: Request & { user: RefreshTokenPayload },
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    await this.authService.logout(req.user);
+    clearRefreshTokenCookies(res);
   }
 
   @AllowAnonymous()
@@ -69,19 +70,13 @@ export class AuthController {
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
   public async refreshToken(
-    @Req() req: Request & { user: RefreshTokenPayloadDto },
+    @Req() req: Request & { user: RefreshTokenPayload },
     @Res({ passthrough: true }) res: Response,
   ) {
     const { token, refreshToken: newRefreshToken } =
       await this.authService.refreshToken(req.user);
 
-    res.cookie(this.config.cookie.name, newRefreshToken, {
-      httpOnly: this.config.cookie.httpOnly,
-      secure: this.config.cookie.secure,
-      sameSite: this.config.cookie.sameSite,
-      path: this.config.cookie.path,
-      maxAge: this.config.refreshTokenExpiresIn * 1000,
-    });
+    setRefreshTokenCookie(res, newRefreshToken);
     return { token };
   }
 }
