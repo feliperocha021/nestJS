@@ -1,5 +1,5 @@
 import { Hashtag } from 'src/hashtag/hashtag.entity';
-import { User } from 'src/users/user.entity';
+import { User } from 'src/user/user.entity';
 import {
   Column,
   CreateDateColumn,
@@ -26,7 +26,7 @@ export class Tweet {
     type: 'text',
     nullable: true,
   })
-  image?: string;
+  image?: string | null;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -37,13 +37,14 @@ export class Tweet {
   // relações
   @ManyToOne(() => User, (user) => user.tweets, {
     eager: true,
+    onDelete: 'CASCADE',
   })
-  user: User;
+  user?: User;
 
   @ManyToMany(() => Hashtag, (hashtag) => hashtag.tweets, {
     cascade: true,
     eager: true,
   })
   @JoinTable()
-  hashtags: Hashtag[];
+  hashtags?: Hashtag[];
 }

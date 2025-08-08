@@ -8,12 +8,12 @@ import {
 } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import authConfig from './config/auth.config';
-import { UsersService } from 'src/users/users.service';
-import { CreateUserDto } from 'src/users/dtos/create-user.dto';
+import { UserService } from 'src/user/user.service';
+import { CreateUserDto } from 'src/user/dtos/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { HashingProvider } from './provider/hashing.provider';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/users/user.entity';
+import { User } from 'src/user/user.entity';
 import { RedisJtiProvider } from './provider/redis-jti.provider';
 import { randomUUID } from 'crypto';
 import {
@@ -27,8 +27,8 @@ export class AuthService {
     @Inject(authConfig.KEY)
     private readonly authConfiguration: ConfigType<typeof authConfig>,
 
-    @Inject(forwardRef(() => UsersService))
-    private readonly userService: UsersService,
+    @Inject(forwardRef(() => UserService))
+    private readonly userService: UserService,
 
     private readonly hashingProvider: HashingProvider,
     private readonly jwtService: JwtService,

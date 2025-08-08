@@ -13,7 +13,7 @@ import authConfig from './config/auth.config';
 import redisConfig, { RedisConfig } from './config/redis.config';
 import Redis from 'ioredis';
 
-import { UsersModule } from 'src/users/users.modules';
+import { UserModule } from 'src/user/user.modules';
 import { HashingProvider } from './provider/hashing.provider';
 import { BcryptProvider } from './provider/bcrypt.provider';
 import { JwtModule } from '@nestjs/jwt';
@@ -44,7 +44,7 @@ import { RedisJtiProvider } from './provider/redis-jti.provider';
     },
   ],
   imports: [
-    forwardRef(() => UsersModule),
+    forwardRef(() => UserModule),
     ConfigModule.forFeature(authConfig),
     ConfigModule.forFeature(redisConfig),
     PassportModule.register({ defaultStrategy: 'jwt' }),

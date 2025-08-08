@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
-import { PaginationQueryDto } from './pagination-query.dto';
+import { PaginationQueryDto } from './dto/pagination-query.dto';
 import {
   FindManyOptions,
   FindOptionsWhere,

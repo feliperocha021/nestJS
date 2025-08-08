@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from 'src/users/dtos/create-user.dto';
+import { CreateUserDto } from 'src/user/dtos/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { AllowAnonymous } from './decorators/allow-anonymous.decorator';
 import { ConfigType } from '@nestjs/config';

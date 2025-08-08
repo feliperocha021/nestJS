@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Profile } from './profile.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -30,7 +30,7 @@ export class ProfileService {
     });
 
     if (!profile) {
-      return 'Profile not found';
+      throw new NotFoundException('This profile does not exist');
     }
 
     Object.assign(profile, profileDto);
@@ -38,6 +38,12 @@ export class ProfileService {
   }
 
   public async deleteProfile(id: number) {
+    const profile = await this.profileRepository.findOneBy({ id });
+
+    if (!profile) {
+      throw new NotFoundException(`This profile with id ${id} does not exist`);
+    }
+
     return await this.profileRepository.delete(id);
   }
 }

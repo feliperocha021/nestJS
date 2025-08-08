@@ -464,3 +464,59 @@ fwpMeJf36P0k6yJV_adQssw5c
 - No frontend, quando o token de acesso está prestes à expirar um novo token de acesso é solicitado utilizando o token refresh sem que o usuário perceba.
 - Mantém o token de acesso com vida curta, reduzindo o impacto se ele for roubado.
 - O refresh token fica armazenado com mais proteção (ex: em httpOnly cookies), dificultando acesso indevido.
+
+## Teste unitário
+
+### import { Test, TestingModule } from '@nestjs/testing';
+
+- Importa o sistema de testes do NestJS.
+
+- Test é usado para criar o módulo de teste.
+
+- TestingModule é o módulo simulado que você vai usar para testar o artefato.
+
+### describe('Nome', () => { ... })
+
+- Define um grupo de testes.
+
+- O nome é só para organização (geralmente o nome da classe que está sendo testada).
+
+- Dentro dele ficam os testes relacionados àquele artefato.
+
+### beforeEach(async () => { ... })
+
+- Executa antes de cada teste.
+
+- Cria um módulo de teste com os providers (services, controllers, etc.).
+
+- Usa compile() para preparar o ambiente de teste.
+
+- Recupera a instância do artefato com moduleRef.get().
+
+### it('deve fazer algo', () => { ... })
+
+- Define um teste individual.
+
+- O nome deve descrever o que está sendo testado.
+
+- Dentro dele você usa expect() para verificar o comportamento.
+
+### expect(valor).toBe(esperado)
+
+- Verifica se o valor retornado é igual ao esperado.
+
+- **Existem várias funções de verificação:**
+
+- toBe() → compara valores primitivos
+
+- toEqual() → compara objetos
+
+- toBeTruthy() / toBeFalsy() → verifica se é verdadeiro/falso
+
+- toContain() → verifica se um array contém um item
+
+- toThrow() → verifica se uma função lança erro
+
+## const spy = jest.spyOn(appService, 'getHello');
+
+- Isso evita o problema de escopo com métodos que usam this, e permite verificar se o método foi chamado.

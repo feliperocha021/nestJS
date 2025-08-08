@@ -1,5 +1,5 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { User } from '../users/user.entity';
+import { User } from '../user/user.entity';
 import * as dotenv from 'dotenv';
 import { Profile } from 'src/profile/profile.entity';
 import { Tweet } from 'src/tweet/tweet.entity';

@@ -1,4 +1,4 @@
-import { User } from 'src/users/user.entity';
+import { User } from 'src/user/user.entity';
 import {
   Entity,
   Column,
@@ -23,14 +23,14 @@ export class Profile {
     nullable: true,
     length: 20,
   })
-  firstName: string;
+  firstName: string | null;
 
   @Column({
     type: 'varchar',
     nullable: true,
     length: 30,
   })
-  lastName: string;
+  lastName: string | null;
 
   @Column({
     type: 'enum',
@@ -38,28 +38,28 @@ export class Profile {
     enumName: 'profile_gender_enum',
     nullable: true,
   })
-  gender: Gender;
+  gender: Gender | null;
 
   @Column({
     type: 'timestamp',
     nullable: true,
   })
-  dateOfBirth: Date;
+  dateOfBirth: Date | null;
 
   @Column({
     type: 'text',
     nullable: true,
   })
-  bio: string;
+  bio: string | null;
 
   @Column({
     type: 'text',
     nullable: true,
   })
-  profileImage: string;
+  profileImage: string | null;
 
   // relações
   @OneToOne(() => User, (user) => user.profile)
   @JoinColumn()
-  user: User;
+  user?: User;
 }

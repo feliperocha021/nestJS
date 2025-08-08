@@ -5,14 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-import { UsersModule } from './users/users.modules';
+import { UserModule } from './user/user.modules';
 import { TweetModule } from './tweet/tweet.module';
 import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import { HashtagModule } from './hashtag/hashtag.module';
-import { PaginationModule } from './common/pagination/dto/pagination.module';
+import { PaginationModule } from './common/pagination/pagination.module';
 
-import { User } from './users/user.entity';
+import { User } from './user/user.entity';
 import { Profile } from './profile/profile.entity';
 import { Tweet } from './tweet/tweet.entity';
 import { Hashtag } from './hashtag/hashtag.entity';
@@ -29,11 +29,12 @@ const envPath = ENV ? `.env.${ENV.trim()}.local` : '.env';
 
 @Module({
   imports: [
-    UsersModule,
+    UserModule,
     TweetModule,
     AuthModule,
     ProfileModule,
     PaginationModule,
+    HashtagModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: [envPath],
@@ -55,7 +56,6 @@ const envPath = ENV ? `.env.${ENV.trim()}.local` : '.env';
         synchronize: false,
       }),
     }),
-    HashtagModule,
   ],
   controllers: [AppController],
   providers: [
