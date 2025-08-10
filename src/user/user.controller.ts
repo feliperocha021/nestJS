@@ -42,14 +42,20 @@ export class UserController {
   @Post()
   async createUser(@Body() user: CreateUserDto) {
     const newUser = await this.userService.createUser(user);
+    console.log('newUser');
     console.log(newUser);
+    console.log('newUser');
     const newUserwithProfile = await this.userService.findUserByIdWithProfile(
       newUser.id,
     );
+    console.log('newUserwithProfile');
     console.log(newUserwithProfile);
-    return plainToInstance(UserDetailDto, newUserwithProfile, {
+    console.log('newUserwithProfile');
+    const returnFinal = plainToInstance(UserDetailDto, newUserwithProfile, {
       excludeExtraneousValues: true,
     });
+    console.log(returnFinal);
+    return returnFinal;
   }
 
   @Delete('me')

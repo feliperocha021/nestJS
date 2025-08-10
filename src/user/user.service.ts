@@ -59,7 +59,7 @@ export class UserService {
 
     // Separar dados
     const { profile: profileDto, ...userData } = userDto;
-
+    console.log('profileDto:', profileDto);
     // Criando o usuário
     const newUser = this.userRepository.create({
       ...userData,
@@ -72,13 +72,9 @@ export class UserService {
       ...(profileDto || {}),
       user: savedUser,
     };
-    console.log('++++++=+++++++++=+++++');
-    console.log(profileData);
-    console.log('++++++=+++++++++=+++++');
-    const testeProfile = await this.profileService.createProfile(profileData);
-    console.log('---------------------');
-    console.log(testeProfile);
-    console.log('---------------------');
+    console.log('profileData:', profileData);
+    const resultProfile = await this.profileService.createProfile(profileData);
+    console.log('resultProfile:', resultProfile);
     return savedUser;
   }
 
@@ -89,11 +85,14 @@ export class UserService {
       relations: ['profile'],
     });
 
+    console.log(user);
+
     if (!user) {
       throw new NotFoundException(`user with id ${id} does not exist`);
     }
 
     // deletar o perfil antes, pois ele possui uma chave estrangeira do usuário
+    // o perfil sempre é criado junto ao usuário mesmo que ele seja vazio.
     if (user?.profile) {
       await this.profileService.deleteProfile(user.profile.id);
     }

@@ -130,12 +130,14 @@ describe('UserController (unit)', () => {
         email: savedUser.email,
         createdAt: savedUser.createdAt,
         profile: {
+          id: PROFILE_ID[1],
           firstName: 'Alice',
           lastName: 'Wonder',
           gender: null,
           dateOfBirth: null,
           bio: null,
           profileImage: null,
+          user: undefined,
         },
       });
     });

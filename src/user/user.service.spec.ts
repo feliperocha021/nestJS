@@ -12,7 +12,6 @@ import { PaginationQueryDto } from 'src/common/pagination/dto/pagination-query.d
 import { CreateUserDto } from './dtos/create-user.dto';
 
 import {
-  USER_ID,
   PROFILE_ID,
   INVALID_ID,
   INVALID_USERNAME,
@@ -21,6 +20,7 @@ import {
   createUserDto,
   savedUser,
   savedWithProfile,
+  createUserNoProfile,
 } from './__mocks__/user.mock';
 
 describe('UserService (unit)', () => {
@@ -122,6 +122,7 @@ describe('UserService (unit)', () => {
       // createProfile -> ok
       profileService.createProfile.mockResolvedValue(undefined);
 
+      const { profile: _, ...userData } = dto;
       const result = await userService.createUser(dto);
 
       expect(userRepo.findOne).toHaveBeenNthCalledWith(1, {
@@ -133,8 +134,8 @@ describe('UserService (unit)', () => {
 
       expect(hashingProvider.hashPassword).toHaveBeenCalledWith(dto.password);
       expect(userRepo.create).toHaveBeenCalledWith({
-        ...dto,
-        password: 'senhaCriptografada',
+        ...userData,
+        password: 'senhaHash',
       });
       expect(userRepo.save).toHaveBeenCalled();
 
@@ -151,7 +152,7 @@ describe('UserService (unit)', () => {
       expect(result).toEqual(savedUser);
     });
 
-    it('should throw UserAlreadyExistsException with username arealdy exists', async () => {
+    it('should throw UserAlreadyExistsException when username arealdy exists', async () => {
       const dto: CreateUserDto = createUserDto as CreateUserDto;
 
       userRepo.findOne.mockResolvedValueOnce({
@@ -169,7 +170,7 @@ describe('UserService (unit)', () => {
       expect(profileService.createProfile).not.toHaveBeenCalled();
     });
 
-    it('should throw UserAlreadyExistsException with email arealdy exists', async () => {
+    it('should throw UserAlreadyExistsException when email arealdy exists', async () => {
       const dto: CreateUserDto = createUserDto as CreateUserDto;
 
       userRepo.findOne
@@ -186,74 +187,66 @@ describe('UserService (unit)', () => {
       expect(profileService.createProfile).not.toHaveBeenCalled();
     });
 
-    it('deve criar profile mesmo sem profile no DTO (profile vazio + user)', async () => {
-      const dto: CreateUserDto = {
-        username: 'bob',
-        email: 'bob@example.com',
-        password: 'S3nh@!',
-      };
+    it('should create a profile even without a profile in the DTO (empty profile + user)', async () => {
+      const dto: CreateUserDto = createUserNoProfile;
 
       userRepo.findOne.mockResolvedValueOnce(undefined);
       userRepo.findOne.mockResolvedValueOnce(undefined);
-      hashingProvider.hashPassword.mockResolvedValue('hashBob');
-      userRepo.create.mockImplementation((e) => e);
+      hashingProvider.hashPassword.mockResolvedValue('senhaHash');
+      userRepo.create.mockImplementation((e: CreateUserDto) => e);
       userRepo.save.mockResolvedValue({
         ...savedUser,
-        id: USER_ID[1],
-        username: 'bob',
-        email: 'bob@example.com',
-        password: 'hashBob',
-      } as any);
-      profileService.createProfile.mockResolvedValue(undefined);
+      });
+      profileService.createProfile.mockResolvedValue({
+        id: PROFILE_ID[1],
+        firstName: null,
+        lastName: null,
+        gender: null,
+        dateOfBirth: null,
+        bio: null,
+        profileImage: null,
+        user: savedUser,
+      });
 
       const result = await userService.createUser(dto);
 
       expect(profileService.createProfile).toHaveBeenCalledWith({
-        user: expect.objectContaining({ id: USER_ID[1] }),
+        user: savedUser,
       });
-      expect(result.username).toBe('bob');
+      expect(result.username).toBe('alice');
     });
   });
 
   describe('deleteUser', () => {
-    it('deve deletar usuário com profile (deleta profile antes)', async () => {
+    it('should delete user with profile (delete profile before)', async () => {
       // findOne com relations ['profile']
       userRepo.findOne.mockResolvedValue({
         ...savedWithProfile,
-        profile: { id: PROFILE_ID[1] },
-      } as any);
+      });
 
-      profileService.deleteProfile.mockResolvedValue(undefined);
-      userRepo.delete.mockResolvedValue(undefined);
-
-      const result = await userService.deleteUser(USER_ID[1]);
+      profileService.deleteProfile.mockResolvedValue({
+        raw: [],
+        affected: 1,
+      });
+      userRepo.delete.mockResolvedValue({
+        raw: [],
+        affected: 1,
+      });
+      const result = await userService.deleteUser(savedWithProfile.id);
 
       expect(userRepo.findOne).toHaveBeenCalledWith({
-        where: { id: USER_ID[1] },
+        where: { id: savedWithProfile.id },
         relations: ['profile'],
       });
-      expect(profileService.deleteProfile).toHaveBeenCalledWith(PROFILE_ID[1]);
-      expect(userRepo.delete).toHaveBeenCalledWith(USER_ID[1]);
+      expect(profileService.deleteProfile).toHaveBeenCalledWith(
+        savedWithProfile.profile.id,
+      );
+      expect(userRepo.delete).toHaveBeenCalledWith(savedWithProfile.id);
       expect(result).toEqual({ delete: true });
     });
 
-    it('deve deletar usuário sem profile (não chama deleteProfile)', async () => {
-      userRepo.findOne.mockResolvedValue({
-        ...savedUser,
-        profile: undefined,
-      } as any);
-
-      userRepo.delete.mockResolvedValue(undefined);
-
-      const result = await userService.deleteUser(USER_ID[1]);
-
-      expect(profileService.deleteProfile).not.toHaveBeenCalled();
-      expect(userRepo.delete).toHaveBeenCalledWith(USER_ID[1]);
-      expect(result).toEqual({ delete: true });
-    });
-
-    it('deve lançar NotFoundException quando id não existe', async () => {
-      userRepo.findOne.mockResolvedValue(undefined);
+    it('should throw NotFoundException when id does not exist', async () => {
+      userRepo.findOne.mockResolvedValue(null);
 
       await expect(userService.deleteUser(INVALID_ID)).rejects.toThrow(
         NotFoundException,
@@ -263,17 +256,17 @@ describe('UserService (unit)', () => {
   });
 
   describe('findUserById', () => {
-    it('deve retornar o usuário quando existe', async () => {
-      userRepo.findOneBy.mockResolvedValue(savedUser as any);
+    it('should return user when exists', async () => {
+      userRepo.findOneBy.mockResolvedValue(savedUser);
 
-      const result = await userService.findUserById(USER_ID[1]);
+      const result = await userService.findUserById(savedUser.id);
 
-      expect(userRepo.findOneBy).toHaveBeenCalledWith({ id: USER_ID[1] });
+      expect(userRepo.findOneBy).toHaveBeenCalledWith({ id: savedUser.id });
       expect(result).toEqual(savedUser);
     });
 
-    it('deve lançar NotFoundException quando não existe', async () => {
-      userRepo.findOneBy.mockResolvedValue(undefined);
+    it('should throw NotFoundException when user does not exist', async () => {
+      userRepo.findOneBy.mockResolvedValue(null);
 
       await expect(userService.findUserById(INVALID_ID)).rejects.toThrow(
         NotFoundException,
@@ -282,17 +275,19 @@ describe('UserService (unit)', () => {
   });
 
   describe('findUserByUsername', () => {
-    it('deve retornar o usuário quando username existe', async () => {
-      userRepo.findOneBy.mockResolvedValue(rawUser as any);
+    it('should return user when username exists', async () => {
+      userRepo.findOneBy.mockResolvedValue(savedUser);
 
-      const result = await userService.findUserByUsername('Mark');
+      const result = await userService.findUserByUsername(savedUser.username);
 
-      expect(userRepo.findOneBy).toHaveBeenCalledWith({ username: 'Mark' });
-      expect(result).toEqual(rawUser);
+      expect(userRepo.findOneBy).toHaveBeenCalledWith({
+        username: savedUser.username,
+      });
+      expect(result).toEqual(savedUser);
     });
 
-    it('deve lançar NotFoundException quando username não existe', async () => {
-      userRepo.findOneBy.mockResolvedValue(undefined);
+    it('should throw NotFoundException when username does not exist', async () => {
+      userRepo.findOneBy.mockResolvedValue(null);
 
       await expect(
         userService.findUserByUsername(INVALID_USERNAME),
@@ -301,20 +296,22 @@ describe('UserService (unit)', () => {
   });
 
   describe('findUserByIdWithProfile', () => {
-    it('deve retornar usuário com profile quando existe', async () => {
-      userRepo.findOne.mockResolvedValue(savedWithProfile as any);
+    it('should return user with profile when exists', async () => {
+      userRepo.findOne.mockResolvedValue(savedWithProfile);
 
-      const result = await userService.findUserByIdWithProfile(USER_ID[1]);
+      const result = await userService.findUserByIdWithProfile(
+        savedWithProfile.id,
+      );
 
       expect(userRepo.findOne).toHaveBeenCalledWith({
-        where: { id: USER_ID[1] },
+        where: { id: savedWithProfile.id },
         relations: ['profile'],
       });
       expect(result).toEqual(savedWithProfile);
     });
 
-    it('deve lançar NotFoundException quando não existe', async () => {
-      userRepo.findOne.mockResolvedValue(undefined);
+    it('should throw NotFoundException when does not exists', async () => {
+      userRepo.findOne.mockResolvedValue(null);
 
       await expect(
         userService.findUserByIdWithProfile(INVALID_ID),

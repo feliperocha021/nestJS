@@ -28,8 +28,6 @@ export const rawUser = {
   tweets: undefined,
 };
 
-export const rawUserNoProfile = { ...rawUser, profile: undefined };
-
 export const fakePaginated: Paginated<typeof rawUser> = {
   data: [rawUser],
   meta: {
@@ -56,6 +54,8 @@ export const createUserDto = {
     lastName: 'Wonder',
   },
 };
+
+export const createUserNoProfile = { ...createUserDto, profile: undefined };
 
 export const savedUser = {
   id: USER_ID[1],
