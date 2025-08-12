@@ -17,16 +17,21 @@ import { HashingProvider } from 'src/auth/provider/hashing.provider';
 
 @Injectable() // faz com que ele possa ser fornecido em qualquer outra classe
 export class UserService {
+  private readonly instanceId = Math.random().toString(36).slice(2, 7);
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-
     private readonly profileService: ProfileService,
     private readonly paginationProvider: PaginationProvider,
 
     @Inject(forwardRef(() => HashingProvider))
     private readonly hashingProvider: HashingProvider,
-  ) {}
+  ) {
+    console.log(
+      `[UserService ${this.instanceId}] construído. Repo ok?`,
+      !!this.userRepository,
+    );
+  }
 
   public async getAllUsers(
     paginationDto: PaginationQueryDto,
@@ -59,7 +64,7 @@ export class UserService {
 
     // Separar dados
     const { profile: profileDto, ...userData } = userDto;
-    console.log('profileDto:', profileDto);
+
     // Criando o usuário
     const newUser = this.userRepository.create({
       ...userData,
@@ -72,9 +77,7 @@ export class UserService {
       ...(profileDto || {}),
       user: savedUser,
     };
-    console.log('profileData:', profileData);
-    const resultProfile = await this.profileService.createProfile(profileData);
-    console.log('resultProfile:', resultProfile);
+    await this.profileService.createProfile(profileData);
     return savedUser;
   }
 
@@ -84,8 +87,6 @@ export class UserService {
       where: { id: id },
       relations: ['profile'],
     });
-
-    console.log(user);
 
     if (!user) {
       throw new NotFoundException(`user with id ${id} does not exist`);
@@ -114,6 +115,10 @@ export class UserService {
   }
 
   public async findUserByUsername(username: string) {
+    console.log(
+      `[UserService ${this.instanceId}] findUserByUsername: repo ok?`,
+      !!this.userRepository,
+    );
     const user = await this.userRepository.findOneBy({ username });
     if (!user) {
       throw new NotFoundException(`Username "${username}" does not exist`);

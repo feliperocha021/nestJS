@@ -10,7 +10,7 @@ export class TweetResponseDto {
   text: string;
 
   @Expose()
-  image?: string;
+  image: string;
 
   @Expose()
   createdAt: Date;

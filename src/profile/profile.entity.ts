@@ -23,14 +23,14 @@ export class Profile {
     nullable: true,
     length: 20,
   })
-  firstName: string | null;
+  firstName?: string | null;
 
   @Column({
     type: 'varchar',
     nullable: true,
     length: 30,
   })
-  lastName: string | null;
+  lastName?: string | null;
 
   @Column({
     type: 'enum',
@@ -38,25 +38,25 @@ export class Profile {
     enumName: 'profile_gender_enum',
     nullable: true,
   })
-  gender: Gender | null;
+  gender?: Gender | null;
 
   @Column({
     type: 'timestamp',
     nullable: true,
   })
-  dateOfBirth: Date | null;
+  dateOfBirth?: Date | null;
 
   @Column({
     type: 'text',
     nullable: true,
   })
-  bio: string | null;
+  bio?: string | null;
 
   @Column({
     type: 'text',
     nullable: true,
   })
-  profileImage: string | null;
+  profileImage?: string | null;
 
   // relações
   @OneToOne(() => User, (user) => user.profile)

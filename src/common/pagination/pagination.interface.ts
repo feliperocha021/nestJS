@@ -6,7 +6,7 @@ export interface Paginated<T> {
     currentPage: number;
     totalPages: number;
   };
-  links: {
+  links?: {
     first: string;
     last: string;
     current: string;

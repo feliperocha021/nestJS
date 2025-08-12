@@ -87,7 +87,9 @@ export class TweetService {
     // hashtags será vazio se o usuário quiser removê-la
     tweet.hashtags = hashtags;
 
-    return await this.tweetRepository.save(tweet);
+    const response = await this.tweetRepository.save(tweet);
+    console.log(response);
+    return response;
   }
 
   public async deleteTweet(id: number) {

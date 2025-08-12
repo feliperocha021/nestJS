@@ -8,7 +8,9 @@ import {
   Patch,
   Post,
   Query,
+  Req,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { TweetService } from './tweet.service';
 import { CreateTweetDto } from './dto/create-tweet.dto';
 import { UpdateTweetDto } from './dto/update-tweet.dto';
@@ -23,16 +25,34 @@ export class TweetController {
 
   @Get()
   async getTweetsByUser(
+    @Req() req: Request,
     @ActiveUser('sub') userId: number,
     @Query() paginationDto: PaginationQueryDto,
   ) {
-    const { data, meta, links } = await this.tweetService.getTweetsByUser(
+    // Busca dados e meta pelo service
+    const { data, meta } = await this.tweetService.getTweetsByUser(
       userId,
       paginationDto,
     );
+
+    // Converte entidades para DTOs
     const dtos = plainToInstance(TweetResponseDto, data, {
       excludeExtraneousValues: true,
     });
+
+    // Monta links de paginação no controller
+    const baseUrl = `${req.protocol}://${req.headers.host}`;
+    const path = req.baseUrl + req.path;
+    const mk = (p: number) =>
+      `${baseUrl}${path}?limit=${meta.itemsPerPage}&page=${p}`;
+
+    const links = {
+      first: mk(1),
+      last: mk(meta.totalPages),
+      current: mk(meta.currentPage),
+      next: mk(Math.min(meta.totalPages, meta.currentPage + 1)),
+      previous: mk(Math.max(1, meta.currentPage - 1)),
+    };
 
     return { data: dtos, meta, links };
   }

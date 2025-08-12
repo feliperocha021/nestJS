@@ -3,18 +3,27 @@ import { Repository } from 'typeorm';
 import { Profile } from './profile.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProfileDto } from './dto/create-profile.dto';
+import { PaginationQueryDto } from 'src/common/pagination/dto/pagination-query.dto';
+import { Paginated } from 'src/common/pagination/pagination.interface';
+import { PaginationProvider } from 'src/common/pagination/pagination.provider';
 
 @Injectable()
 export class ProfileService {
   constructor(
     @InjectRepository(Profile)
     private readonly profileRepository: Repository<Profile>,
+    private readonly paginationProvider: PaginationProvider,
   ) {}
 
-  public async getAllProfiles() {
-    return this.profileRepository.find({
-      relations: ['user'],
-    });
+  public async getAllProfiles(
+    paginationDto: PaginationQueryDto,
+  ): Promise<Paginated<Profile>> {
+    return await this.paginationProvider.paginateQuery(
+      paginationDto,
+      this.profileRepository,
+      undefined,
+      ['user'],
+    );
   }
 
   public async createProfile(profileDto: CreateProfileDto) {
@@ -22,10 +31,10 @@ export class ProfileService {
     return await this.profileRepository.save(newProfile);
   }
 
-  public async updateProfile(id: number, profileDto: CreateProfileDto) {
+  public async updateProfile(userId: number, profileDto: CreateProfileDto) {
     // perfil existe para esse usuário?
     const profile = await this.profileRepository.findOne({
-      where: { user: { id } },
+      where: { user: { id: userId } },
       relations: ['user'],
     });
 

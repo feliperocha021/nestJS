@@ -13,7 +13,7 @@ import authConfig from './config/auth.config';
 import redisConfig, { RedisConfig } from './config/redis.config';
 import Redis from 'ioredis';
 
-import { UserModule } from 'src/user/user.modules';
+import { UserModule } from 'src/user/user.module';
 import { HashingProvider } from './provider/hashing.provider';
 import { BcryptProvider } from './provider/bcrypt.provider';
 import { JwtModule } from '@nestjs/jwt';
@@ -25,8 +25,6 @@ import { RedisJtiProvider } from './provider/redis-jti.provider';
     AuthService,
     JwtStrategy,
     JwtRefreshStrategy,
-    JwtAuthGuard,
-    JwtRefreshGuard,
     RedisJtiProvider,
     {
       provide: HashingProvider,

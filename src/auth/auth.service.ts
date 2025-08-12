@@ -36,25 +36,34 @@ export class AuthService {
   ) {}
 
   public async login(loginDto: LoginDto) {
-    // encontrar usuário
-    const user = await this.userService.findUserByUsername(loginDto.username);
+    try {
+      const user = await this.userService.findUserByUsername(loginDto.username);
+      console.log('passou banco', user);
 
-    // comparar a senha
-    let isEqual: boolean = false;
-    isEqual = await this.hashingProvider.comparePassword(
-      loginDto.password,
-      user.password,
-    );
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
 
-    if (!isEqual) {
-      throw new UnauthorizedException('Incorrect credentials');
+      const isEqual = await this.hashingProvider.comparePassword(
+        loginDto.password,
+        user.password,
+      );
+      console.log('passou hash');
+
+      if (!isEqual) {
+        throw new UnauthorizedException('Incorrect credentials');
+      }
+
+      await this.redisJtiProvider.cleanupExpiredJtis(user.id.toString());
+      console.log('passou banco redis');
+
+      const response = await this.generateToken(user);
+      console.log('passou token');
+      return response;
+    } catch (error) {
+      console.error('Erro no AuthService.login:', error);
+      throw error; // Deixa o Nest lidar (mas agora com log claro)
     }
-
-    // limpando refreshTokens já expirados
-    await this.redisJtiProvider.cleanupExpiredJtis(user.id.toString());
-
-    // criando token de acesso e de atualização jwt
-    return await this.generateToken(user);
   }
 
   public async signup(userDto: CreateUserDto) {

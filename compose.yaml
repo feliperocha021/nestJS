@@ -23,7 +23,9 @@ services:
       - .:/usr/src/app
     networks:
       - dev-net
-  
+    environment:
+      NODE_ENV: ${NODE_ENV}
+
   postgres:
     image: postgres:16
     container_name: postgres
@@ -34,13 +36,19 @@ services:
       - "${DB_PORT}:${DB_PORT}"
     networks:
       - dev-net
-  
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DB}
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
     ports:
       - "${PGADMIN_PORT}:80"
     environment:
+      NODE_ENV: ${NODE_ENV}
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
     volumes:
@@ -49,19 +57,19 @@ services:
       - postgres
     networks:
       - dev-net
-  
+
   redis-stack:
     image: redis/redis-stack:latest
     container_name: redis-stack
     ports:
       - "${REDIS_PORT}:6379"
       - "${REDIS_INSIGHT_PORT}:8001"
-    env_file:
-      - .env.development.local
     volumes:
       - redis-stack-data:/data
     networks:
       - dev-net
+    environment:
+      NODE_ENV: ${NODE_ENV}
 
 volumes:
   pgdata:
