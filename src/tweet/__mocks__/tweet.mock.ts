@@ -1,4 +1,3 @@
-// test/mocks/tweet.mock.ts
 import { Paginated } from 'src/common/pagination/pagination.interface';
 import { HashtagResponseDto } from 'src/hashtag/dto/hashtag-response.dto';
 import { USER_ID } from 'src/profile/__mocks__/profile.mock';
@@ -161,13 +160,6 @@ export const fakePaginatedTweetsEntity: Paginated<typeof rawTweetEntity> = {
     totalItems: 2,
     currentPage: 1,
     totalPages: 2,
-  },
-  links: {
-    first: 'http://localhost:3000/tweets?limit=1&page=1',
-    last: 'http://localhost:3000/tweets?limit=1&page=2',
-    current: 'http://localhost:3000/tweets?limit=1&page=1',
-    next: 'http://localhost:3000/tweets?limit=1&page=2',
-    previous: 'http://localhost:3000/tweets?limit=1&page=1',
   },
 };
 

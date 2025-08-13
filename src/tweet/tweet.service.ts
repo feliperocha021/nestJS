@@ -107,6 +107,7 @@ export class TweetService {
     // return await this.tweetRepository.delete(tweet);
 
     // COM CASCADE
-    return await this.tweetRepository.remove(tweet);
+    await this.tweetRepository.remove(tweet);
+    return { delete: true };
   }
 }

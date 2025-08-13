@@ -24,5 +24,5 @@ export class TweetResponseDto {
 
   @Expose()
   @Type(() => HashtagResponseDto)
-  hashtags: HashtagResponseDto[];
+  hashtags?: HashtagResponseDto[];
 }

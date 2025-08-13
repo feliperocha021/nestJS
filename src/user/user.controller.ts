@@ -28,7 +28,6 @@ export class UserController {
     @Query() paginateDto: PaginationQueryDto,
   ) {
     const { data, meta } = await this.userService.getAllUsers(paginateDto);
-
     // Monta DTOs
     const dtos = plainToInstance(UserDetailDto, data, {
       excludeExtraneousValues: true,

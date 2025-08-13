@@ -26,12 +26,7 @@ export class UserService {
 
     @Inject(forwardRef(() => HashingProvider))
     private readonly hashingProvider: HashingProvider,
-  ) {
-    console.log(
-      `[UserService ${this.instanceId}] construído. Repo ok?`,
-      !!this.userRepository,
-    );
-  }
+  ) {}
 
   public async getAllUsers(
     paginationDto: PaginationQueryDto,

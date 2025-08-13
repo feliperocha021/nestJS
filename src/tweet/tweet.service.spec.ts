@@ -13,7 +13,6 @@ import { PaginationQueryDto } from 'src/common/pagination/dto/pagination-query.d
 import {
   // ENTIDADE (service)
   rawTweetEntity,
-  rawTweetEntityNoHashtags,
   savedTweetEntity,
   fakePaginatedTweetsEntity,
 
@@ -93,7 +92,9 @@ describe('TweetService (unit)', () => {
     it('should return paginated tweets (entity format)', async () => {
       const query: PaginationQueryDto = { limit: 1, page: 1 };
       userService.findUserById.mockResolvedValue(undefined);
-      paginationProvider.paginateQuery.mockResolvedValue(fakePaginatedTweetsEntity);
+      paginationProvider.paginateQuery.mockResolvedValue(
+        fakePaginatedTweetsEntity,
+      );
 
       const result = await tweetService.getTweetsByUser(1, query);
 
@@ -111,8 +112,8 @@ describe('TweetService (unit)', () => {
     it('should create a tweet with hashtags (entity format)', async () => {
       userService.findUserById.mockResolvedValue({ id: 1, username: 'mark' });
       hashtagService.findHashtags.mockResolvedValue([rawHashtag]);
-      tweetRepo.create.mockImplementation((data: CreateTweetDto) => data as any);
-      tweetRepo.save.mockResolvedValue(savedTweetEntity as any);
+      tweetRepo.create.mockImplementation((data: CreateTweetDto) => data);
+      tweetRepo.save.mockResolvedValue(savedTweetEntity);
 
       const dto = { ...createTweetDto, hashtags: [rawHashtag.id] };
       const result = await tweetService.createTweetOfUser(1, dto);
@@ -188,7 +189,7 @@ describe('TweetService (unit)', () => {
         relations: ['hashtags'],
       });
       expect(tweetRepo.remove).toHaveBeenCalledWith(rawTweetEntity);
-      expect(result).toEqual(rawTweetEntity);
+      expect(result).toEqual({ delete: true });
     });
 
     it('should throw NotFoundException when tweet not found', async () => {

@@ -36,6 +36,16 @@ export const fakePaginated: Paginated<typeof rawUser> = {
     currentPage: 1,
     totalPages: 9,
   },
+};
+
+export const fakePaginatedController: Paginated<typeof rawUser> = {
+  data: [rawUser],
+  meta: {
+    itemsPerPage: 1,
+    totalItems: 9,
+    currentPage: 1,
+    totalPages: 9,
+  },
   links: {
     first: 'http://localhost:3000/users?limit=1&page=1',
     last: 'http://localhost:3000/users?limit=1&page=9',

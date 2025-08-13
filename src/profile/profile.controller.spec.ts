@@ -3,6 +3,7 @@ import { ProfileController } from './profile.controller';
 import { ProfileService } from './profile.service';
 import { ProfileResponseDto } from './dto/profile-response.dto';
 import { NotFoundException } from '@nestjs/common';
+import { Request } from 'express';
 import {
   USER_ID,
   PROFILE_ID,
@@ -44,7 +45,16 @@ describe('ProfileController (unit)', () => {
       profileService.getAllProfiles.mockResolvedValue(fakePaginatedProfiles);
 
       const query = { limit: 1, page: 1 };
-      const result = await profileController.getAllProfiles(query);
+      const req = {
+        protocol: 'http',
+        headers: { host: 'localhost:3000' },
+        baseUrl: '/profiles',
+        path: '',
+      };
+      const result = await profileController.getAllProfiles(
+        req as Request,
+        query,
+      );
 
       expect(profileService.getAllProfiles).toHaveBeenCalledWith(query);
       expect(result.data).toHaveLength(1);
@@ -63,7 +73,13 @@ describe('ProfileController (unit)', () => {
         },
       });
       expect(result.meta).toEqual(fakePaginatedProfiles.meta);
-      expect(result.links).toEqual(fakePaginatedProfiles.links);
+      expect(result.links).toEqual({
+        first: 'http://localhost:3000/profiles?limit=1&page=1',
+        last: 'http://localhost:3000/profiles?limit=1&page=3',
+        current: 'http://localhost:3000/profiles?limit=1&page=1',
+        next: 'http://localhost:3000/profiles?limit=1&page=2',
+        previous: 'http://localhost:3000/profiles?limit=1&page=1',
+      });
     });
   });
 

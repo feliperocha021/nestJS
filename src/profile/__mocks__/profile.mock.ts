@@ -1,4 +1,3 @@
-// test/mocks/profile.mock.ts
 import { Gender } from 'src/profile/profile.entity';
 import { Paginated } from 'src/common/pagination/pagination.interface';
 
@@ -65,12 +64,5 @@ export const fakePaginatedProfiles: Paginated<typeof rawProfile> = {
     totalItems: 3,
     currentPage: 1,
     totalPages: 3,
-  },
-  links: {
-    first: 'http://localhost:3000/profiles?limit=1&page=1',
-    last: 'http://localhost:3000/profiles?limit=1&page=3',
-    current: 'http://localhost:3000/profiles?limit=1&page=1',
-    next: 'http://localhost:3000/profiles?limit=1&page=2',
-    previous: 'http://localhost:3000/profiles?limit=1&page=1',
   },
 };

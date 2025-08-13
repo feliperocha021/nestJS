@@ -1,6 +1,6 @@
 // src/user/user.controller.spec.ts
 import { Test, TestingModule } from '@nestjs/testing';
-
+import { Request } from 'express';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { UserDetailDto } from './dtos/user-detail.dto';
@@ -54,7 +54,13 @@ describe('UserController (unit)', () => {
       userService.getAllUsers.mockResolvedValue(fakePaginated);
 
       const query = { limit: 1, page: 1 };
-      const result = await userController.getAllUsers(query);
+      const req = {
+        protocol: 'http',
+        headers: { host: 'localhost:3000' },
+        baseUrl: '/users',
+        path: '',
+      };
+      const result = await userController.getAllUsers(req as Request, query);
 
       expect(userService.getAllUsers).toHaveBeenCalledWith(query);
 
@@ -76,7 +82,13 @@ describe('UserController (unit)', () => {
         },
       });
       expect(result.meta).toEqual(fakePaginated.meta);
-      expect(result.links).toEqual(fakePaginated.links);
+      expect(result.links).toEqual({
+        first: 'http://localhost:3000/users?limit=1&page=1',
+        last: 'http://localhost:3000/users?limit=1&page=9',
+        current: 'http://localhost:3000/users?limit=1&page=1',
+        next: 'http://localhost:3000/users?limit=1&page=2',
+        previous: 'http://localhost:3000/users?limit=1&page=1',
+      });
     });
   });
 
