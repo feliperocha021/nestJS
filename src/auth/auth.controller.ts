@@ -38,11 +38,8 @@ export class AuthController {
     @Body() dto: LoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    console.log('chamou controller');
     const { token, refreshToken } = await this.authService.login(dto);
-    console.log('chamou service');
     setRefreshTokenCookie(res, refreshToken);
-    console.log('inseriu cookies');
     return { token };
   }
 
@@ -66,6 +63,7 @@ export class AuthController {
   ) {
     await this.authService.logout(req.user);
     clearRefreshTokenCookies(res);
+    return { logout: true };
   }
 
   @AllowAnonymous()

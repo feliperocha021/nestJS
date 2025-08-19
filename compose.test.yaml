@@ -1,0 +1,46 @@
+services:
+  nest-test:
+    build:
+      context: .
+    container_name: nest-test
+    command: sleep infinity
+    depends_on:
+      - postgres-test
+      - redis-test
+    volumes:
+      - .:/usr/src/app
+    networks:
+      - default
+    environment:
+      NODE_ENV: ${NODE_ENV}
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+
+  postgres-test:
+    image: postgres:16
+    container_name: postgres-test
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DB}
+    volumes:
+      - pgdata-test:/var/lib/postgresql/data
+
+  redis-test:
+    image: redis/redis-stack:latest
+    container_name: redis-test
+    ports:
+      - "6379:6379"
+      - "8001:8001"
+    environment:
+      NODE_ENV: ${NODE_ENV}
+    volumes:
+      - redis-stack-data-test:/data
+
+volumes:
+  pgdata-test:
+  redis-stack-data-test:

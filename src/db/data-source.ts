@@ -19,6 +19,9 @@ export const dataSourceOptions: DataSourceOptions = {
   entities: [User, Profile, Tweet, Hashtag],
   migrations: ['dist/db/migrations/*.js'],
   synchronize: false,
+  extra: {
+    application_name: 'nest-migrations-app',
+  },
 };
 
 export const dataSource = new DataSource(dataSourceOptions);

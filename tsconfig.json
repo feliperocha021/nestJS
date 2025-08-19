@@ -11,6 +11,7 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "allowJs": true,
     "paths": {
       "src/*": ["src/*"]
     },
@@ -22,5 +23,5 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "test/**/*", "jest.setup.js"],
 }

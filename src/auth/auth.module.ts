@@ -5,8 +5,6 @@ import { AuthService } from './auth.service';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 
 import { ConfigModule } from '@nestjs/config';
 import authConfig from './config/auth.config';

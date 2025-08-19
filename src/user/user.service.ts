@@ -110,10 +110,6 @@ export class UserService {
   }
 
   public async findUserByUsername(username: string) {
-    console.log(
-      `[UserService ${this.instanceId}] findUserByUsername: repo ok?`,
-      !!this.userRepository,
-    );
     const user = await this.userRepository.findOneBy({ username });
     if (!user) {
       throw new NotFoundException(`Username "${username}" does not exist`);

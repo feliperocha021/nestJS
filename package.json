@@ -8,14 +8,14 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "cross-env NODE_ENV=development && nest start",
-    "start:dev": "cross-env NODE_ENV=development && nest start --watch",
-    "start:test": "cross-env NODE_ENV=test && nest start --watch",
+    "start": "cross-env NODE_ENV=development nest start",
+    "start:dev": "cross-env NODE_ENV=development nest start --watch",
+    "start:test": "cross-env NODE_ENV=test nest start",
     "start:debug": "cross-env NODE_ENV=development && nest start --debug --watch",
     "debug": "cross-env NODE_ENV=development && nest start --debug",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
+    "test": "cross-env NODE_ENV=test jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
@@ -35,6 +35,7 @@
     "@nestjs/typeorm": "^11.0.0",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
+    "cache-manager": "^7.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "cookie-parser": "^1.4.7",
@@ -58,6 +59,7 @@
     "@nestjs/testing": "^11.0.1",
     "@swc/cli": "^0.6.0",
     "@swc/core": "^1.10.7",
+    "@types/cache-manager": "^4.0.6",
     "@types/cookie-parser": "^1.4.9",
     "@types/express": "^5.0.0",
     "@types/ioredis": "^4.28.10",
@@ -78,7 +80,8 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.20.0"
+    "typescript-eslint": "^8.20.0",
+    "why-is-node-running": "^3.2.2"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -86,21 +89,32 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
+    "rootDir": ".",
+    "testRegex": ".*\\.(spec|int-spec|e2e-spec)\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
-    "coverageDirectory": "../coverage",
+    "coverageDirectory": "coverage",
     "testEnvironment": "node",
     "setupFiles": [
       "tsconfig-paths/register"
     ],
     "moduleNameMapper": {
-      "^src/(.*)$": "<rootDir>/$1"
-    }
+      "^src/(.*)$": "<rootDir>/src/$1"
+    },
+    "modulePathIgnorePatterns": [
+      "<rootDir>/dist/"
+    ],
+    "transformIgnorePatterns": [
+      "/node_modules/",
+      "<rootDir>/dist/"
+    ],
+    "detectOpenHandles": false,
+    "detectLeaks": false,
+    "logHeapUsage": false,
+    "verbose": true
   }
 }

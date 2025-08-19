@@ -520,3 +520,43 @@ fwpMeJf36P0k6yJV_adQssw5c
 ## const spy = jest.spyOn(appService, 'getHello');
 
 - Isso evita o problema de escopo com métodos que usam this, e permite verificar se o método foi chamado.
+
+## Compose override
+
+- Usado para testes de integração e end2end
+
+- Subir:
+`docker compose -f compose.overrider.yaml --env-file .env.test.local up -d`
+
+- Derrubar:
+`docker compose -f compose.override.yaml down -v`
+
+## Testes
+
+### Teste Unitário
+- Foco: Uma função, método ou classe específica
+
+- Garantir que a menor unidade de código funciona isoladamente
+
+- Exempplo: Testar apenas o UserService.createUser() usando mocks para o repositório e demais dependências
+
+- Não garantem que módulos diferentes funcionem bem juntos
+
+### Teste de Integração
+- A comunicação entre dois ou mais módulos reais
+
+- Verificar se partes do sistema interagem corretamente usando implementações concretas (ex.: repositório real com banco em memória)
+
+- Exemplo: Rodar o UserService junto com o TypeORM usando um SQLite em memória, sem mocks, para validar queries e persistência
+
+- Desvantagens: Mais lentos e complexos que os unitários, e não cobrem o fluxo completo de um usuário
+
+### Teste End-to-End (E2E)
+
+- Foco: O sistema como um todo, da entrada à saída
+
+- Simular a jornada real de um usuário, passando por todas as camadas (HTTP → Controller → Service → Banco → Response)
+
+- Exemplo: Usar supertest para fazer requisições na API completa, verificando status code, corpo da resposta, headers, validações e serializações
+
+- Mais lentos, complexos de manter e sensíveis a mudanças na interface
