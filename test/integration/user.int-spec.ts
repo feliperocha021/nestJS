@@ -17,9 +17,9 @@ import { HashingProvider } from '../../src/auth/provider/hashing.provider';
 import { BcryptProvider } from '../../src/auth/provider/bcrypt.provider';
 
 import { CreateUserDto } from '../../src/user/dtos/create-user.dto';
-import { Tweet } from 'src/tweet/tweet.entity';
-import { Hashtag } from 'src/hashtag/hashtag.entity';
 import { UserAlreadyExistsException } from 'src/customExceptions/user-arealdy-exists.exception';
+import { PostgresTestModule } from './postgres-test.module';
+import { Tweet } from 'src/tweet/tweet.entity';
 
 describe('UserModule – Integration', () => {
   let app: INestApplication;
@@ -37,17 +37,8 @@ describe('UserModule – Integration', () => {
   beforeAll(async () => {
     moduleRef = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forRoot({
-          type: 'postgres',
-          host: process.env.DB_HOST || 'postgres-test',
-          port: Number(process.env.DB_PORT) || 5432,
-          username: process.env.DB_USER || 'nestuser',
-          password: process.env.DB_PASSWORD || 'nestpass',
-          database: process.env.DB_DB || 'nestdb',
-          entities: [User, Profile, Tweet, Hashtag],
-          synchronize: true,
-        }),
-        TypeOrmModule.forFeature([User, Profile]),
+        PostgresTestModule,
+        TypeOrmModule.forFeature([User, Profile, Tweet]),
         ProfileModule,
         PaginationModule,
       ],
@@ -75,19 +66,11 @@ describe('UserModule – Integration', () => {
   });
 
   beforeEach(async () => {
-    // Limpa todas as tabelas entre os testes
-    const entities = dataSource.entityMetadatas;
-    for (const entity of entities) {
-      const repository = dataSource.getRepository(entity.name);
-      await repository.query(
-        `TRUNCATE TABLE "${entity.tableName}" RESTART IDENTITY CASCADE;`,
-      );
-    }
+    // recria as tabelas a partir das suas entities
+    await dataSource.synchronize(true);
   });
 
   afterAll(async () => {
-    const active = (process as any)._getActiveHandles?.();
-    console.log('Handles ainda ativos:', active);
     await dataSource.destroy();
     await app.close();
   });

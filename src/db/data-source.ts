@@ -17,7 +17,7 @@ export const dataSourceOptions: DataSourceOptions = {
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DB,
   entities: [User, Profile, Tweet, Hashtag],
-  migrations: ['dist/db/migrations/*.js'],
+  migrations: ['dist/src/db/migrations/*.js'],
   synchronize: false,
   extra: {
     application_name: 'nest-migrations-app',

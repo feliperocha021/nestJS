@@ -12,7 +12,7 @@ export class CreateTweetDto {
   text: string;
 
   @IsOptional()
-  image?: string;
+  image?: string | null;
 
   @IsOptional()
   @IsInt({ each: true }) // Valide cada item dentro do array para ver se é um inteiro.

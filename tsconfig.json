@@ -23,5 +23,5 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false
   },
-  "include": ["src/**/*", "test/**/*", "jest.setup.js"],
+  "include": ["src/**/*", "test/**/*", "jest.teardown.js"],
 }

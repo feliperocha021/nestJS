@@ -21,8 +21,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "migration:generate:inside": "npm run build && npx typeorm migration:generate",
-    "migration:run:inside": "npm run build && npx typeorm migration:run -d dist/db/data-source.js",
-    "migration:revert:inside": "npx typeorm migration:revert -d dist/db/data-source.js"
+    "migration:run:inside": "npm run build && npx typeorm migration:run -d dist/src/db/data-source.js",
+    "migration:revert:inside": "npx typeorm migration:revert -d dist/src/db/data-source.js"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -74,14 +74,14 @@
     "jest": "^29.7.0",
     "prettier": "^3.4.2",
     "source-map-support": "^0.5.21",
-    "supertest": "^7.0.0",
+    "supertest": "^7.1.4",
     "ts-jest": "^29.2.5",
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.20.0",
-    "why-is-node-running": "^3.2.2"
+    "why-is-node-running": "^2.3.0"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -115,6 +115,9 @@
     "detectOpenHandles": false,
     "detectLeaks": false,
     "logHeapUsage": false,
-    "verbose": true
+    "verbose": true,
+    "maxWorkers": "50%",
+    "testTimeout": 30000,
+    "globalTeardown": "<rootDir>/jest.teardown.js"
   }
 }

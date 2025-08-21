@@ -18,7 +18,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { CanActivate, ExecutionContext } from '@nestjs/common';
 import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
 import { JwtRefreshStrategy } from 'src/auth/strategies/jwt-refresh.strategy';
-import { DatabaseTestModule } from './database-test.module';
+import { PostgresTestModule } from './postgres-test.module';
 import { Redis } from 'ioredis';
 
 import { User } from 'src/user/user.entity';
@@ -49,7 +49,7 @@ describe('ProfileModule – Integration', () => {
   beforeAll(async () => {
     moduleRef = await Test.createTestingModule({
       imports: [
-        DatabaseTestModule,
+        PostgresTestModule,
         TypeOrmModule.forFeature([User, Profile]),
         UserModule,
         PaginationModule,
@@ -68,7 +68,6 @@ describe('ProfileModule – Integration', () => {
       .useValue({})
       .overrideProvider('REDIS_CLIENT')
       .useValue({
-        // só precisa do método quit, o resto não é usado nos seus testes de Profile
         quit: async () => {},
       })
       .compile();
@@ -90,13 +89,8 @@ describe('ProfileModule – Integration', () => {
   });
 
   beforeEach(async () => {
-    const entities = dataSource.entityMetadatas;
-    for (const entity of entities) {
-      const repository = dataSource.getRepository(entity.name);
-      await repository.query(
-        `TRUNCATE TABLE "${entity.tableName}" RESTART IDENTITY CASCADE;`,
-      );
-    }
+    // recria as tabelas a partir das suas entities
+    await dataSource.synchronize(true);
   });
 
   afterAll(async () => {
