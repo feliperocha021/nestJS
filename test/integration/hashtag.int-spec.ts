@@ -17,7 +17,7 @@ import { PaginationModule } from '../../src/common/pagination/pagination.module'
 import { APP_GUARD } from '@nestjs/core';
 import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
 import { JwtRefreshStrategy } from 'src/auth/strategies/jwt-refresh.strategy';
-import { PostgresTestModule } from './postgres-test.module';
+import { PostgresTestModule } from '../postgres-test.module';
 
 import { Hashtag } from 'src/hashtag/hashtag.entity';
 

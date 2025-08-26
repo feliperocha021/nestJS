@@ -16,6 +16,15 @@ services:
     ports:
       - "${APP_PORT}:${APP_PORT}"
 
+##  nest-migrate:
+##    build: .
+##    depends_on:
+##      - postgres-test
+##      - redis-test
+##    command: ["npm", "run", "migration:run:inside"]
+##    environment:
+##      NODE_ENV: ${NODE_ENV}
+
   postgres-test:
     image: postgres:16
     container_name: postgres-test

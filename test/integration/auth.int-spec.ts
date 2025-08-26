@@ -10,8 +10,8 @@ import { UserService } from '../../src/user/user.service';
 import { RedisJtiProvider } from '../../src/auth/provider/redis-jti.provider';
 import { CreateUserDto } from '../../src/user/dtos/create-user.dto';
 
-import { PostgresTestModule } from './postgres-test.module';
-import { RedisTestModule } from './redis-test.module';
+import { PostgresTestModule } from '../postgres-test.module';
+import { RedisTestModule } from '../redis-test.module';
 import { AuthModule } from '../../src/auth/auth.module';
 import { JwtStrategy } from '../../src/auth/strategies/jwt.strategy';
 import { JwtRefreshStrategy } from '../../src/auth/strategies/jwt-refresh.strategy';

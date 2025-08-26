@@ -1,7 +1,7 @@
 import { Inject, Module, OnModuleDestroy } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import Redis from 'ioredis';
-import redisConfig, { RedisConfig } from '../../src/auth/config/redis.config';
+import redisConfig, { RedisConfig } from 'src/auth/config/redis.config';
 
 @Module({
   imports: [

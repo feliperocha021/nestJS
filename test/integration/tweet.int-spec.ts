@@ -23,7 +23,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
 import { JwtRefreshStrategy } from 'src/auth/strategies/jwt-refresh.strategy';
 import { Redis } from 'ioredis';
-import { PostgresTestModule } from './postgres-test.module';
+import { PostgresTestModule } from '../postgres-test.module';
 
 import { Tweet } from 'src/tweet/tweet.entity';
 import { User } from 'src/user/user.entity';

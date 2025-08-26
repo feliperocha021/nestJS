@@ -18,7 +18,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { CanActivate, ExecutionContext } from '@nestjs/common';
 import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
 import { JwtRefreshStrategy } from 'src/auth/strategies/jwt-refresh.strategy';
-import { PostgresTestModule } from './postgres-test.module';
+import { PostgresTestModule } from '../postgres-test.module';
 import { Redis } from 'ioredis';
 
 import { User } from 'src/user/user.entity';

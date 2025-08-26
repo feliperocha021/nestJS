@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Hashtag } from './hashtag.entity';
 import { In, IsNull, Repository } from 'typeorm';
@@ -29,6 +33,17 @@ export class HashtagService {
   }
 
   public async createHashtag(hashtagDto: CreateHashtagDto) {
+    const hashtagExist = await this.hashtagRepository.findOne({
+      where: {
+        name: hashtagDto.name,
+        deletedAt: IsNull(),
+      },
+    });
+
+    if (hashtagExist) {
+      throw new BadRequestException('This hashtag already exists');
+    }
+
     const newHashtag = this.hashtagRepository.create(hashtagDto);
 
     const response = await this.hashtagRepository.save(newHashtag);

@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from '../../src/user/user.entity';
-import { Profile } from '../../src/profile/profile.entity';
-import { Tweet } from '../../src/tweet/tweet.entity';
-import { Hashtag } from '../../src/hashtag/hashtag.entity';
+import { User } from '../src/user/user.entity';
+import { Profile } from '../src/profile/profile.entity';
+import { Tweet } from '../src/tweet/tweet.entity';
+import { Hashtag } from '../src/hashtag/hashtag.entity';
 import { DataSource, DataSourceOptions } from 'typeorm';
 
 @Module({
