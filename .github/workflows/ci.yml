@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [ "dev" ]
+  pull_request:
+    branches: [ "dev", "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: nestuser
+          POSTGRES_PASSWORD: nestpass
+          POSTGRES_DB: nestdb
+        options: >-
+          --health-cmd "pg_isready -U nestuser -d nestdb"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis/redis-stack:latest
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      # forçamos o Nest a usar o .env.test.local
+      NODE_ENV: test
+      APP_PORT: 3000
+
+      # PostgreSQL (conforme .env.test.local)
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: nestuser
+      DB_PASSWORD: nestpass
+      DB_DB: nestdb
+
+      # Redis (conforme .env.test.local)
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_URL: redis://redis:6379
+
+      # JWT – crie este secret no seu repositório GitHub
+      JWT_TOKEN_SECRET: ${{ secrets.JWT_TOKEN_SECRET }}
+      JWT_TOKEN_EXPIRESIN: 3600
+      JWT_REFRESH_TOKEN_EXPIRESIN: 86400
+      JWT_TOKEN_AUDIENCE: localhost:3000
+      JWT_TOKEN_ISSUER: localhost:3000
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and run migrations
+        run: npm run migration:run:inside
+
+      - name: Run tests & collect coverage
+        run: npm run test:cov
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage/
+
