@@ -81,6 +81,7 @@
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.20.0",
+    "wait-on": "^8.0.4",
     "why-is-node-running": "^2.3.0"
   },
   "jest": {
@@ -94,10 +95,32 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
+    "collectCoverage": true,
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "src/**/*.ts",
+      "!src/db/**",
+      "!src/common/filters/**",
+      "!src/config/**",
+      "!src/constants/**",
+      "!src/**/*.module.ts",
+      "!src/**/*.(dto|entity|config).ts"
     ],
     "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "clover",
+      "html"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    },
     "testEnvironment": "node",
     "setupFiles": [
       "tsconfig-paths/register"

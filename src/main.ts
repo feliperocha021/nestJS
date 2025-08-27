@@ -5,7 +5,7 @@ import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 
 import * as cookieParser from 'cookie-parser';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
-import { SpelunkerModule } from 'nestjs-spelunker';
+//import { SpelunkerModule } from 'nestjs-spelunker';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
