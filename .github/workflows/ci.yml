@@ -74,14 +74,6 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Wait for Postgres
-        run: |
-          until pg_isready -h postgres -p 5432 -U nestuser; do
-            echo "Waiting for Postgres..."
-            sleep 3
-          done
-          echo "Postgres is up!"
-
       - name: Run tests & collect coverage
         run: npm run test:cov
 
