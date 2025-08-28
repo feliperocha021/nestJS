@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: ["dev"]
   pull_request:
-    branches: [ "dev", "main" ]
+    branches: ["dev", "main"]
 
 jobs:
   test:
@@ -13,8 +13,7 @@ jobs:
     services:
       postgres-test:
         image: postgres:16
-        ports:
-          - 5432:5432
+        ports: ["5432:5432"]
         env:
           POSTGRES_USER: nestuser
           POSTGRES_PASSWORD: nestpass
@@ -22,35 +21,27 @@ jobs:
         options: >-
           --name postgres-test
           --health-cmd "pg_isready -h localhost -U nestuser -d nestdb"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-interval 10s --health-timeout 5s --health-retries 5
 
       redis-test:
         image: redis/redis-stack:latest
-        ports:
-          - 6379:6379
+        ports: ["6379:6379"]
         options: >-
           --name redis-test
           --health-cmd "redis-cli -h localhost ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-interval 10s --health-timeout 5s --health-retries 5
 
     env:
       NODE_ENV: test
       APP_PORT: 3000
-
       DB_HOST: localhost
       DB_PORT: 5432
       DB_USER: nestuser
       DB_PASSWORD: nestpass
       DB_DB: nestdb
-
       REDIS_HOST: localhost
       REDIS_PORT: 6379
       REDIS_URL: redis://localhost:6379
-
       JWT_TOKEN_SECRET: ${{ secrets.JWT_TOKEN_SECRET }}
       JWT_TOKEN_EXPIRESIN: 3600
       JWT_REFRESH_TOKEN_EXPIRESIN: 86400
@@ -58,14 +49,14 @@ jobs:
       JWT_TOKEN_ISSUER: localhost:3000
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
-          cache: 'npm'
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -73,44 +64,8 @@ jobs:
       - name: Build
         run: npm run build
 
-      # --- Debug extra ---
-      - name: Show container logs (initial)
-        run: |
-          echo "=== Postgres logs ==="
-          docker logs postgres-test || true
-          echo "=== Redis logs ==="
-          docker logs redis-test || true
-
-      - name: Inspect container health
-        run: |
-          echo "=== Postgres health ==="
-          docker inspect --format='{{json .State.Health}}' postgres-test || true
-          echo "=== Redis health ==="
-          docker inspect --format='{{json .State.Health}}' redis-test || true
-
-      - name: Debug connectivity
-        run: |
-          echo "=== DNS / Host Resolution ==="
-          ping -c 3 localhost || true
-          ping -c 3 localhost || true
-          echo "=== Port Checks ==="
-          nc -vz localhost 5432 || true
-          nc -vz localhost 6379 || true
-
-      # --- Espera com timeout ---
       - name: Wait for Postgres (max 45s)
-        run: |
-          for i in {1..15}; do
-            echo "$(date '+%H:%M:%S') - Attempt $i"
-            if pg_isready -h localhost -p 5432 -U nestuser -d nestdb; then
-              echo "Postgres is up!"
-              exit 0
-            fi
-            sleep 3
-          done
-          echo "❌ Postgres did not become ready in time"
-          docker logs postgres-test
-          exit 1
+        run: pg_isready -h localhost -p 5432 -U nestuser -d nestdb -t 45
 
       - name: Run migrations
         run: npx typeorm migration:run -d dist/src/db/data-source.js
@@ -123,3 +78,18 @@ jobs:
         with:
           name: coverage-report
           path: coverage/
+
+      # Debug só quando falhar
+      - name: Debug info (on failure)
+        if: failure()
+        run: |
+          echo "=== Postgres logs ==="
+          docker logs postgres-test || true
+          echo "=== Redis logs ==="
+          docker logs redis-test || true
+          echo "=== Health checks ==="
+          docker inspect --format='{{json .State.Health}}' postgres-test || true
+          docker inspect --format='{{json .State.Health}}' redis-test || true
+          echo "=== Port checks ==="
+          nc -vz localhost 5432 || true
+          nc -vz localhost 6379 || true
