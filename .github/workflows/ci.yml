@@ -74,6 +74,15 @@ jobs:
       - name: Build
         run: npm run build
 
+
+      - name: Wait for Postgres
+        run: |
+          until pg_isready -h postgres-test -p 5432 -U nestuser; do
+            echo "Waiting for Postgres..."
+            sleep 3
+          done
+          echo "Postgres is up!"
+
       - name: Run migrations
         run: npx typeorm migration:run -d dist/src/db/data-source.js
 
