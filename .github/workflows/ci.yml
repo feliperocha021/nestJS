@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      postgres:
+      postgres-test:
         image: postgres:16
         ports:
           - 5432:5432
@@ -20,35 +20,34 @@ jobs:
           POSTGRES_PASSWORD: nestpass
           POSTGRES_DB: nestdb
         options: >-
+          --name postgres-test
           --health-cmd "pg_isready -U nestuser -d nestdb"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
 
-      redis:
+      redis-test:
         image: redis/redis-stack:latest
         ports:
           - 6379:6379
         options: >-
+          --name redis-test
           --health-cmd "redis-cli ping"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
 
     env:
-      # forçamos o Nest a usar o .env.test.local
       NODE_ENV: test
       APP_PORT: 3000
 
-      # PostgreSQL (conforme .env.test.local)
-      DB_HOST: postgres
+      DB_HOST: postgres-test
       DB_PORT: 5432
       DB_USER: nestuser
       DB_PASSWORD: nestpass
       DB_DB: nestdb
 
-      # Redis (conforme .env.test.local)
-      REDIS_HOST: redis
+      REDIS_HOST: redis-test
       REDIS_PORT: 6379
       REDIS_URL: redis://redis:6379
 
@@ -63,7 +62,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 18
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
