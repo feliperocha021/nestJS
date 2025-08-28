@@ -74,6 +74,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Run migrations
+        run: npx typeorm migration:run -d dist/src/db/data-source.js
+
       - name: Run tests & collect coverage
         run: npm run test:cov
 
