@@ -41,15 +41,15 @@ jobs:
       NODE_ENV: test
       APP_PORT: 3000
 
-      DB_HOST: postgres-test
+      DB_HOST: localhost
       DB_PORT: 5432
       DB_USER: nestuser
       DB_PASSWORD: nestpass
       DB_DB: nestdb
 
-      REDIS_HOST: redis-test
+      REDIS_HOST: localhost
       REDIS_PORT: 6379
-      REDIS_URL: redis://redis-test:6379
+      REDIS_URL: redis://localhost:6379
 
       JWT_TOKEN_SECRET: ${{ secrets.JWT_TOKEN_SECRET }}
       JWT_TOKEN_EXPIRESIN: 3600
@@ -91,18 +91,18 @@ jobs:
       - name: Debug connectivity
         run: |
           echo "=== DNS / Host Resolution ==="
-          ping -c 3 postgres-test || true
-          ping -c 3 redis-test || true
+          ping -c 3 localhost || true
+          ping -c 3 localhost || true
           echo "=== Port Checks ==="
-          nc -vz postgres-test 5432 || true
-          nc -vz redis-test 6379 || true
+          nc -vz localhost 5432 || true
+          nc -vz localhost 6379 || true
 
       # --- Espera com timeout ---
       - name: Wait for Postgres (max 45s)
         run: |
           for i in {1..15}; do
             echo "$(date '+%H:%M:%S') - Attempt $i"
-            if pg_isready -h postgres-test -p 5432 -U nestuser -d nestdb; then
+            if pg_isready -h localhost -p 5432 -U nestuser -d nestdb; then
               echo "Postgres is up!"
               exit 0
             fi
