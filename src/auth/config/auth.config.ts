@@ -14,6 +14,9 @@ export default registerAs('auth', () => ({
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict' as const,
-    path: '/auth/refresh-token',
+    pathRefreshToken: '/auth/refresh-token',
+    pathLogout: '/auth/logout',
+    maxAge:
+      parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRESIN ?? '86400', 10) * 1000,
   },
 }));

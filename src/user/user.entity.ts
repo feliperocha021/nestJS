@@ -46,7 +46,7 @@ export class User {
   updatedAt: Date;
 
   @DeleteDateColumn()
-  deletedAt: Date;
+  deletedAt: Date | null;
 
   // relações
   @OneToOne(() => Profile, (profile) => profile.user, {
@@ -55,5 +55,5 @@ export class User {
   profile?: Profile;
 
   @OneToMany(() => Tweet, (tweet) => tweet.user)
-  tweets: Tweet[];
+  tweets?: Tweet[];
 }

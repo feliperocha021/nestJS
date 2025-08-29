@@ -21,9 +21,9 @@ export class Hashtag {
   name: string;
 
   @DeleteDateColumn()
-  deletedAt: Date;
+  deletedAt: Date | null;
 
   // relações
   @ManyToMany(() => Tweet, (tweet) => tweet.hashtags)
-  tweets: Tweet[];
+  tweets?: Tweet[];
 }

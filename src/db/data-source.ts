@@ -1,5 +1,5 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { User } from '../users/user.entity';
+import { User } from '../user/user.entity';
 import * as dotenv from 'dotenv';
 import { Profile } from 'src/profile/profile.entity';
 import { Tweet } from 'src/tweet/tweet.entity';
@@ -17,8 +17,11 @@ export const dataSourceOptions: DataSourceOptions = {
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DB,
   entities: [User, Profile, Tweet, Hashtag],
-  migrations: ['dist/db/migrations/*.js'],
+  migrations: ['dist/src/db/migrations/*.js'],
   synchronize: false,
+  extra: {
+    application_name: 'nest-migrations-app',
+  },
 };
 
 export const dataSource = new DataSource(dataSourceOptions);

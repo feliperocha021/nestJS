@@ -13,4 +13,8 @@ export default Joi.object({
   JWT_REFRESH_TOKEN_EXPIRESIN: Joi.number().required(),
   JWT_TOKEN_AUDIENCE: Joi.string().required(),
   JWT_TOKEN_ISSUER: Joi.string().required(),
+  REDIS_HOST: Joi.string().required(),
+  REDIS_PORT: Joi.number().port().default(6379),
+  REDIS_INSIGHT_PORT: Joi.number().port().default(8001),
+  REDIS_URL: Joi.string().required(),
 });
