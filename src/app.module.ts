@@ -23,6 +23,8 @@ import envValidator from './config/env.validation';
 
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { S3Module } from './s3/s3.module';
+import { LambdaModule } from './lambda/lambda.module';
 
 const ENV = process.env.NODE_ENV;
 const envPath = ENV ? `.env.${ENV.trim()}.local` : '.env';
@@ -35,6 +37,8 @@ const envPath = ENV ? `.env.${ENV.trim()}.local` : '.env';
     ProfileModule,
     PaginationModule,
     HashtagModule,
+    S3Module,
+    LambdaModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: [envPath],

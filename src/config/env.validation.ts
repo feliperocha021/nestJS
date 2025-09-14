@@ -17,4 +17,11 @@ export default Joi.object({
   REDIS_PORT: Joi.number().port().default(6379),
   REDIS_INSIGHT_PORT: Joi.number().port().default(8001),
   REDIS_URL: Joi.string().required(),
+  AWS_REGION: Joi.string().required(),
+  S3_BUCKET: Joi.string().required(),
+  AWS_ACCESS_KEY_ID: Joi.string().required(),
+  AWS_SECRET_ACCESS_KEY: Joi.string().required(),
+  LAMBDA_API_URL: Joi.string().uri().required(),
+  LAMBDA_API_KEY: Joi.string().allow('', null), // opcional, caso você use authorizer diferente
+  LAMBDA_TIMEOUT_MS: Joi.number().default(5000),
 });

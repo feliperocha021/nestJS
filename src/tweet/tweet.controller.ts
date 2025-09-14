@@ -18,10 +18,14 @@ import { PaginationQueryDto } from 'src/common/pagination/dto/pagination-query.d
 import { ActiveUser } from 'src/auth/decorators/active-user.decorator';
 import { plainToInstance } from 'class-transformer';
 import { TweetResponseDto } from './dto/tweet-response.dto';
+import { LambdaService } from 'src/lambda/lambda.service';
 
 @Controller('tweets')
 export class TweetController {
-  constructor(private readonly tweetService: TweetService) {}
+  constructor(
+    private readonly tweetService: TweetService,
+    private readonly lambdaService: LambdaService,
+  ) {}
 
   @Get()
   async getTweetsByUser(
@@ -84,5 +88,18 @@ export class TweetController {
   @Delete(':id')
   async deleteTweet(@Param('id', ParseIntPipe) tweetId: number) {
     return await this.tweetService.deleteTweet(tweetId);
+  }
+
+  @Post(':id/analyze')
+  async analyzeTweet(@Param('id', ParseIntPipe) tweetId: number) {
+    const tweet = await this.tweetService.getTweetById(tweetId);
+
+    const result = await this.lambdaService.analyzeTweet(tweet.text);
+
+    return {
+      tweetId: tweet.id,
+      text: tweet.text,
+      analysis: result,
+    };
   }
 }

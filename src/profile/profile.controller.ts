@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Patch, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { ProfileService } from './profile.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -6,10 +16,15 @@ import { plainToInstance } from 'class-transformer';
 import { ProfileResponseDto } from './dto/profile-response.dto';
 import { ActiveUser } from 'src/auth/decorators/active-user.decorator';
 import { PaginationQueryDto } from 'src/common/pagination/dto/pagination-query.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { S3Service } from 'src/s3/s3.service';
 
 @Controller('profiles')
 export class ProfileController {
-  constructor(private readonly profileService: ProfileService) {}
+  constructor(
+    private readonly profileService: ProfileService,
+    private readonly s3Service: S3Service,
+  ) {}
 
   @Get()
   public async getAllProfiles(
@@ -51,5 +66,16 @@ export class ProfileController {
     return plainToInstance(ProfileResponseDto, updated, {
       excludeExtraneousValues: true,
     });
+  }
+
+  @Post('me/upload-image')
+  @UseInterceptors(FileInterceptor('file'))
+  public async uploadProfileImage(
+    @UploadedFile() file: Express.Multer.File,
+    @ActiveUser('sub') userId: number,
+  ) {
+    const fileKey = await this.s3Service.uploadProfileImage(file);
+    await this.profileService.updateProfileImage(userId, fileKey);
+    return { fileKey };
   }
 }

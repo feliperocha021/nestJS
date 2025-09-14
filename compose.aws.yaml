@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  nest-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nest-app
+    command: npm run start:prod
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    networks:
+      - app-net
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      APP_PORT: ${APP_PORT}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DB: ${DB_DB}
+      REDIS_HOST: redis-stack
+      REDIS_PORT: ${REDIS_PORT}
+      JWT_TOKEN_SECRET: ${JWT_TOKEN_SECRET}
+      JWT_TOKEN_EXPIRESIN: ${JWT_TOKEN_EXPIRESIN}
+      JWT_REFRESH_TOKEN_EXPIRESIN: ${JWT_REFRESH_TOKEN_EXPIRESIN}
+      JWT_TOKEN_AUDIENCE: ${JWT_TOKEN_AUDIENCE}
+      JWT_TOKEN_ISSUER: ${JWT_TOKEN_ISSUER}
+    depends_on:
+      - redis-stack
+
+  redis-stack:
+    image: redis/redis-stack:latest
+    container_name: redis-stack
+    volumes:
+      - redis-stack-data:/data
+    networks:
+      - app-net
+    environment:
+      NODE_ENV: ${NODE_ENV}
+
+volumes:
+  redis-stack-data:
+
+networks:
+  app-net:

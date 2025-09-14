@@ -6,6 +6,7 @@ import { Tweet } from './tweet.entity';
 import { UserModule } from 'src/user/user.module';
 import { HashtagModule } from 'src/hashtag/hashtag.module';
 import { PaginationModule } from 'src/common/pagination/pagination.module';
+import { LambdaModule } from 'src/lambda/lambda.module';
 
 @Module({
   controllers: [TweetController],
@@ -14,6 +15,7 @@ import { PaginationModule } from 'src/common/pagination/pagination.module';
     UserModule,
     HashtagModule,
     PaginationModule,
+    LambdaModule,
     TypeOrmModule.forFeature([Tweet]),
   ],
   exports: [TweetService],

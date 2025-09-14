@@ -110,4 +110,12 @@ export class TweetService {
     await this.tweetRepository.remove(tweet);
     return { delete: true };
   }
+
+  public async getTweetById(id: number) {
+    const tweet = await this.tweetRepository.findOne({ where: { id } });
+    if (!tweet) {
+      throw new NotFoundException(`Tweet with id ${id} does not exist`);
+    }
+    return tweet;
+  }
 }

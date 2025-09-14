@@ -1,0 +1,29 @@
+name: CD Deploy
+
+on:
+  push:
+    branches: ["prod"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar acesso SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Copiar arquivos para servidor
+        run: |
+          scp -r . user@seu-servidor:/home/user/app
+
+      - name: Deploy com Docker Compose
+        run: |
+          ssh user@seu-servidor "
+            cd /home/user/app &&
+            docker compose down &&
+            docker compose up -d --build
+          "

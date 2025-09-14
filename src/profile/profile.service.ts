@@ -55,4 +55,18 @@ export class ProfileService {
 
     return await this.profileRepository.delete(id);
   }
+
+  public async updateProfileImage(userId: number, imageUrl: string) {
+    const profile = await this.profileRepository.findOne({
+      where: { user: { id: userId } },
+      relations: ['user'],
+    });
+
+    if (!profile) {
+      throw new NotFoundException('This profile does not exist');
+    }
+
+    profile.profileImage = imageUrl;
+    return await this.profileRepository.save(profile);
+  }
 }
