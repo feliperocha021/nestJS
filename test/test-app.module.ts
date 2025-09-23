@@ -12,6 +12,8 @@ import { ProfileModule } from '../src/profile/profile.module';
 import { HashtagModule } from '../src/hashtag/hashtag.module';
 import { PaginationModule } from '../src/common/pagination/pagination.module';
 import { ConfigModule } from '@nestjs/config';
+import { S3Module } from 'src/s3/s3.module';
+import { LambdaModule } from 'src/lambda/lambda.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { ConfigModule } from '@nestjs/config';
     ProfileModule,
     HashtagModule,
     PaginationModule,
+    S3Module,
+    LambdaModule,
   ],
   providers: [
     {

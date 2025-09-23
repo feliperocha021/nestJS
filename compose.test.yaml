@@ -3,7 +3,7 @@ services:
     build:
       context: .
     container_name: nest-test
-    command: sleep infinity
+    command: sh -c "npm run migration:run:inside && npm run start:prod"
     depends_on:
       - postgres-test
       - redis-test

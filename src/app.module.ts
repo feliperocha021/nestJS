@@ -58,6 +58,10 @@ const envPath = ENV ? `.env.${ENV.trim()}.local` : '.env';
         entities: [User, Profile, Tweet, Hashtag],
         migrations: ['dist/db/migrations/*.js'],
         synchronize: false,
+        /*
+        ssl: {
+          rejectUnauthorized: false,
+        }, */
         extra: {
           application_name: 'nest-app',
         },

@@ -1,10 +1,10 @@
-// src/tweet/tweet.controller.spec.ts
 import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
 import { NotFoundException } from '@nestjs/common';
 
 import { TweetController } from './tweet.controller';
 import { TweetService } from './tweet.service';
+import { LambdaService } from 'src/lambda/lambda.service';
 import { TweetResponseDto } from './dto/tweet-response.dto';
 import {
   TWEET_ID,
@@ -32,6 +32,12 @@ describe('TweetController (unit)', () => {
             createTweetOfUser: jest.fn(),
             updateTweet: jest.fn(),
             deleteTweet: jest.fn(),
+          },
+        },
+        {
+          provide: LambdaService,
+          useValue: {
+            analyzeTweet: jest.fn(),
           },
         },
       ],

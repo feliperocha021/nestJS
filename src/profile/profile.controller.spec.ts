@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProfileController } from './profile.controller';
 import { ProfileService } from './profile.service';
+import { S3Service } from 'src/s3/s3.service';
 import { ProfileResponseDto } from './dto/profile-response.dto';
 import { NotFoundException } from '@nestjs/common';
 import { Request } from 'express';
@@ -27,6 +28,12 @@ describe('ProfileController (unit)', () => {
           useValue: {
             getAllProfiles: jest.fn(),
             updateProfile: jest.fn(),
+          },
+        },
+        {
+          provide: S3Service,
+          useValue: {
+            uploadProfileImage: jest.fn(),
           },
         },
       ],
