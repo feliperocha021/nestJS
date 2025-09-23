@@ -55,31 +55,32 @@ Este projeto utiliza a variável NODE_ENV para decidir qual arquivo .env será c
 ## Passos
 
 ### Clone o repositório
-`git clone https://github.com/feliperocha021/nestJS.git`
-`cd nestJS`
+```bash
+git clone https://github.com/feliperocha021/nestJS.git
+cd nestJS
 
 ### Suba os containers
-`docker compose --env-file .env up --build -d`
+```docker compose --env-file .env up --build -d```
 
 ### Você pode acompanhar a execução do app
-`docker logs nest-app -f`
+```docker logs nest-app -f```
 
 ### A API estará disponível em:
-`http://localhost:3000`
+```http://localhost:3000```
 
 # 📜 Scripts Disponíveis
 
 Acesse o container da aplicação para utilizar os scripts
-`docker exec -it nest-app sh`
+```docker exec -it nest-app sh```
 
 No `package.json` você encontra os seguintes scripts úteis:
 
-- `npm run start:dev` → inicia a aplicação em modo desenvolvimento (hot reload)  
-- `npm run start:prod` → inicia a aplicação em modo produção (buildado em `dist/`)  
-- `npm run test` → executa todos os testes unitários  
-- `npm run test:cov` → executa testes com relatório de cobertura  
-- `npm run test:e2e` → executa testes end-to-end  
-- `npm run lint` → roda ESLint e corrige problemas automaticamente  
-- `npm run migration:generate:inside` → gera migrations a partir das entidades  
-- `npm run migration:run:inside` → aplica migrations no banco configurado  
-- `npm run migration:revert:inside` → reverte a última migration aplicada  
+- ```npm run start:dev``` → inicia a aplicação em modo desenvolvimento (hot reload)  
+- ```npm run start:prod``` → inicia a aplicação em modo produção (buildado em `dist/`)  
+- ```npm run test``` → executa todos os testes unitários  
+- ```npm run test:cov``` → executa testes com relatório de cobertura  
+- ```npm run test:e2e``` → executa testes end-to-end  
+- ```npm run lint``` → roda ESLint e corrige problemas automaticamente  
+- ```npm run migration:generate:inside``` → gera migrations a partir das entidades  
+- ```npm run migration:run:inside``` → aplica migrations no banco configurado  
+- ```npm run migration:revert:inside``` → reverte a última migration aplicada  
