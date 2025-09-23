@@ -58,6 +58,7 @@ Este projeto utiliza a variável NODE_ENV para decidir qual arquivo .env será c
 ```bash
 git clone https://github.com/feliperocha021/nestJS.git
 cd nestJS
+```
 
 ### Suba os containers
 ```docker compose --env-file .env up --build -d```
