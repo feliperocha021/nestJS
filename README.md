@@ -61,10 +61,14 @@ cd nestJS
 ```
 
 ### Suba os containers
-```docker compose --env-file .env up --build -d```
+```bash
+docker compose --env-file .env up --build -d
+```
 
 ### Você pode acompanhar a execução do app
-```docker logs nest-app -f```
+```bash
+docker logs nest-app -f
+```
 
 ### A API estará disponível em:
 ```http://localhost:3000```
@@ -72,7 +76,9 @@ cd nestJS
 # 📜 Scripts Disponíveis
 
 Acesse o container da aplicação para utilizar os scripts
-```docker exec -it nest-app sh```
+```bash
+docker exec -it nest-app sh
+```
 
 No `package.json` você encontra os seguintes scripts úteis:
 
