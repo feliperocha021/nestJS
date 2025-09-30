@@ -7,6 +7,8 @@ import { USER_ID } from 'src/profile/__mocks__/profile.mock';
 // ====================
 export const TWEET_ID = [1, 2];
 export const INVALID_TWEET_ID = 999;
+export const OWNER_USER_ID = USER_ID[0];
+export const OTHER_USER_ID = 999;
 
 // ====================
 // Hashtags no formato DTO
@@ -56,6 +58,19 @@ export const rawTweetEntity = {
       tweets: undefined,
     },
   ],
+};
+
+
+// Tweet pertencente ao usuário autenticado
+export const ownedTweetEntity = {
+  ...rawTweetEntity,
+  user: { ...rawTweetEntity.user, id: OWNER_USER_ID },
+};
+
+// Tweet pertencente a outro usuário
+export const notOwnedTweetEntity = {
+  ...rawTweetEntity,
+  user: { ...rawTweetEntity.user, id: OTHER_USER_ID },
 };
 
 export const rawTweetEntityNoHashtags = {

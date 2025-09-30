@@ -9,6 +9,7 @@ import { TweetResponseDto } from './dto/tweet-response.dto';
 import {
   TWEET_ID,
   INVALID_TWEET_ID,
+  OWNER_USER_ID,
   fakePaginatedTweetsDto,
   fakePaginatedTweetsEntity,
   savedTweetEntity,
@@ -96,9 +97,11 @@ describe('TweetController (unit)', () => {
       const result = await tweetController.updateTweet(
         updateTweetDto,
         TWEET_ID[1],
+        OWNER_USER_ID,
       );
 
       expect(tweetService.updateTweet).toHaveBeenCalledWith(
+        OWNER_USER_ID,
         TWEET_ID[1],
         updateTweetDto,
       );
@@ -114,7 +117,11 @@ describe('TweetController (unit)', () => {
       );
 
       await expect(
-        tweetController.updateTweet(updateTweetDto, INVALID_TWEET_ID),
+        tweetController.updateTweet(
+          updateTweetDto,
+          INVALID_TWEET_ID,
+          OWNER_USER_ID,
+        ),
       ).rejects.toThrow(NotFoundException);
     });
   });
@@ -124,9 +131,15 @@ describe('TweetController (unit)', () => {
       const fakeDeleteResult = { delete: true };
       tweetService.deleteTweet.mockResolvedValue(fakeDeleteResult);
 
-      const result = await tweetController.deleteTweet(TWEET_ID[0]);
+      const result = await tweetController.deleteTweet(
+        TWEET_ID[0],
+        OWNER_USER_ID,
+      );
 
-      expect(tweetService.deleteTweet).toHaveBeenCalledWith(TWEET_ID[0]);
+      expect(tweetService.deleteTweet).toHaveBeenCalledWith(
+        OWNER_USER_ID,
+        TWEET_ID[0],
+      );
       expect(result).toEqual(fakeDeleteResult);
     });
 
@@ -138,7 +151,7 @@ describe('TweetController (unit)', () => {
       );
 
       await expect(
-        tweetController.deleteTweet(INVALID_TWEET_ID),
+        tweetController.deleteTweet(INVALID_TWEET_ID, OWNER_USER_ID),
       ).rejects.toThrow(NotFoundException);
     });
   });

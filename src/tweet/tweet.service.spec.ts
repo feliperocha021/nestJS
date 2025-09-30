@@ -1,7 +1,11 @@
 // tweet.service.spec.ts (ajustado)
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 
 import { TweetService } from './tweet.service';
 import { Tweet } from './tweet.entity';
@@ -15,6 +19,8 @@ import {
   rawTweetEntity,
   savedTweetEntity,
   fakePaginatedTweetsEntity,
+  notOwnedTweetEntity,
+  ownedTweetEntity,
 
   // ARGUMENTOS (entrada do service)
   createTweetDto,
@@ -23,11 +29,14 @@ import {
   // IDs e auxiliares
   TWEET_ID,
   INVALID_TWEET_ID,
+  OWNER_USER_ID,
+  OTHER_USER_ID,
 
   // Hashtag utilizada nas chamadas
   rawHashtag,
 } from './__mocks__/tweet.mock';
 import { CreateTweetDto } from './dto/create-tweet.dto';
+import { raw } from 'express';
 
 describe('TweetService (unit)', () => {
   let tweetService: TweetService;
@@ -141,24 +150,31 @@ describe('TweetService (unit)', () => {
 
   describe('updateTweet', () => {
     it('should update a tweet (entity format)', async () => {
-      tweetRepo.findOneBy.mockResolvedValue(rawTweetEntity);
+      tweetRepo.findOne.mockResolvedValue(rawTweetEntity);
       hashtagService.findHashtags.mockResolvedValue([rawHashtag]);
       tweetRepo.save.mockResolvedValue(savedTweetEntity);
 
       const dto = { ...updateTweetDto, hashtags: [rawHashtag.id] };
-      const result = await tweetService.updateTweet(TWEET_ID[0], dto);
+      const result = await tweetService.updateTweet(
+        OWNER_USER_ID,
+        TWEET_ID[0],
+        dto,
+      );
 
-      expect(tweetRepo.findOneBy).toHaveBeenCalledWith({ id: TWEET_ID[0] });
+      expect(tweetRepo.findOne).toHaveBeenCalledWith({ 
+        where: { id: TWEET_ID[0] },
+        relations: ['user'],
+      });
       expect(hashtagService.findHashtags).toHaveBeenCalledWith([rawHashtag.id]);
       expect(tweetRepo.save).toHaveBeenCalled();
       expect(result).toEqual(savedTweetEntity);
     });
 
     it('should throw NotFoundException when tweet not found', async () => {
-      tweetRepo.findOneBy.mockResolvedValue(undefined);
+      tweetRepo.findOne.mockResolvedValue(undefined);
 
       await expect(
-        tweetService.updateTweet(INVALID_TWEET_ID, updateTweetDto),
+        tweetService.updateTweet(1, INVALID_TWEET_ID, updateTweetDto),
       ).rejects.toThrow(NotFoundException);
 
       expect(hashtagService.findHashtags).not.toHaveBeenCalled();
@@ -166,13 +182,23 @@ describe('TweetService (unit)', () => {
     });
 
     it('should throw BadRequestException when hashtags are invalid', async () => {
-      tweetRepo.findOneBy.mockResolvedValue(rawTweetEntity);
+      tweetRepo.findOne.mockResolvedValue(rawTweetEntity);
       hashtagService.findHashtags.mockResolvedValue([]); // vazio
 
       const dto = { ...updateTweetDto, hashtags: [999] };
-      await expect(tweetService.updateTweet(TWEET_ID[0], dto)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        tweetService.updateTweet(OWNER_USER_ID, TWEET_ID[0], dto),
+      ).rejects.toThrow(BadRequestException);
+      expect(tweetRepo.save).not.toHaveBeenCalled();
+    });
+
+    it('should throw ForbiddenException when user is not the owner', async () => {
+      tweetRepo.findOne.mockResolvedValue(notOwnedTweetEntity);
+      hashtagService.findHashtags.mockResolvedValue([rawHashtag]);
+      const dto = { ...updateTweetDto, hashtags: [rawHashtag.id] };
+      await expect(
+        tweetService.updateTweet(OWNER_USER_ID, TWEET_ID[0], dto),
+      ).rejects.toThrow(ForbiddenException);
       expect(tweetRepo.save).not.toHaveBeenCalled();
     });
   });
@@ -182,11 +208,11 @@ describe('TweetService (unit)', () => {
       tweetRepo.findOne.mockResolvedValue(rawTweetEntity);
       tweetRepo.remove.mockResolvedValue(rawTweetEntity);
 
-      const result = await tweetService.deleteTweet(TWEET_ID[0]);
+      const result = await tweetService.deleteTweet(OWNER_USER_ID, TWEET_ID[0]);
 
       expect(tweetRepo.findOne).toHaveBeenCalledWith({
         where: { id: TWEET_ID[0] },
-        relations: ['hashtags'],
+        relations: ['user', 'hashtags'],
       });
       expect(tweetRepo.remove).toHaveBeenCalledWith(rawTweetEntity);
       expect(result).toEqual({ delete: true });
@@ -195,10 +221,17 @@ describe('TweetService (unit)', () => {
     it('should throw NotFoundException when tweet not found', async () => {
       tweetRepo.findOne.mockResolvedValue(undefined);
 
-      await expect(tweetService.deleteTweet(INVALID_TWEET_ID)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        tweetService.deleteTweet(1, INVALID_TWEET_ID),
+      ).rejects.toThrow(NotFoundException);
 
+      expect(tweetRepo.remove).not.toHaveBeenCalled();
+    });
+    it('should throw ForbiddenException when user is not the owner', async () => {
+      tweetRepo.findOne.mockResolvedValue(ownedTweetEntity);
+      await expect(
+        tweetService.deleteTweet(OTHER_USER_ID, TWEET_ID[0]),
+      ).rejects.toThrow(ForbiddenException);
       expect(tweetRepo.remove).not.toHaveBeenCalled();
     });
   });

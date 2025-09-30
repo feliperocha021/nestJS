@@ -167,7 +167,7 @@ describe('TweetModule – Integration', () => {
         hashtags: [tag.id],
       });
 
-      const updated = await tweetService.updateTweet(original.id, {
+      const updated = await tweetService.updateTweet(user.id, original.id, {
         text: 'depois',
         image: null,
         hashtags: [],
@@ -180,7 +180,7 @@ describe('TweetModule – Integration', () => {
 
     it('should throw NotFoundException if the tweet does not exist', async () => {
       await expect(
-        tweetService.updateTweet(12345, { text: 'x' }),
+        tweetService.updateTweet(99999, 12345, { text: 'x' }),
       ).rejects.toThrow(NotFoundException);
     });
   });
@@ -192,16 +192,16 @@ describe('TweetModule – Integration', () => {
         text: 'deletar',
       });
 
-      const res = await tweetService.deleteTweet(tweet.id);
+      const res = await tweetService.deleteTweet(user.id, tweet.id);
       expect(res).toEqual({ delete: true });
 
       await expect(
-        tweetService.updateTweet(tweet.id, { text: 'fail' }),
+        tweetService.updateTweet(user.id, tweet.id, { text: 'fail' }),
       ).rejects.toThrow(NotFoundException);
     });
 
     it('should throw NotFoundException for non-existent id', async () => {
-      await expect(tweetService.deleteTweet(54321)).rejects.toThrow(
+      await expect(tweetService.deleteTweet(9999, 54321)).rejects.toThrow(
         NotFoundException,
       );
     });

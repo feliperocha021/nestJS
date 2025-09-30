@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -65,11 +66,25 @@ export class TweetService {
     return saveTweet;
   }
 
-  public async updateTweet(id: number, tweetDto: UpdateTweetDto) {
+  public async updateTweet(
+    userId: number,
+    tweetId: number,
+    tweetDto: UpdateTweetDto,
+  ) {
     // verificando se o tweet existe
-    const tweet = await this.tweetRepository.findOneBy({ id });
+    const tweet = await this.tweetRepository.findOne({
+      where: { id: tweetId },
+      relations: ['user'],
+    });
     if (!tweet) {
-      throw new NotFoundException(`Tweet with id ${id} does not exist`);
+      throw new NotFoundException(`Tweet with id ${tweetId} does not exist`);
+    }
+
+    // verificando se o tweet pertence ao usuário
+    if (tweet.user?.id !== userId) {
+      throw new ForbiddenException(
+        'You do not have permission to update this tweet.',
+      );
     }
 
     // selecionando todas as hashtags
@@ -78,7 +93,7 @@ export class TweetService {
       : [];
 
     if (tweetDto.hashtags?.length !== hashtags?.length) {
-      throw new BadRequestException();
+      throw new BadRequestException('teste');
     }
 
     // atualizando tweet
@@ -92,13 +107,20 @@ export class TweetService {
     return response;
   }
 
-  public async deleteTweet(id: number) {
+  public async deleteTweet(userId: number, tweetId: number) {
     const tweet = await this.tweetRepository.findOne({
-      where: { id: id },
-      relations: ['hashtags'],
+      where: { id: tweetId },
+      relations: ['user', 'hashtags'],
     });
     if (!tweet) {
-      throw new NotFoundException(`Tweet with id ${id} does not exist`);
+      throw new NotFoundException(`Tweet with id ${tweetId} does not exist`);
+    }
+
+    // verificando se o tweet pertence ao usuário
+    if (tweet.user?.id !== userId) {
+      throw new ForbiddenException(
+        'You do not have permission to delete this tweet.',
+      );
     }
 
     // SEM CASCADE

@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   forwardRef,
   Inject,
   Injectable,
@@ -50,6 +51,11 @@ export class UserService {
     });
 
     if (usernameExist) {
+      if (emailExist) {
+        throw new ConflictException(
+          'A user with this username and email address already exists.',
+        );
+      }
       throw new UserAlreadyExistsException('username', userDto.username);
     }
 

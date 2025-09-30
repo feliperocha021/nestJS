@@ -77,8 +77,9 @@ export class TweetController {
   async updateTweet(
     @Body() tweet: UpdateTweetDto,
     @Param('id', ParseIntPipe) tweetId: number,
+    @ActiveUser('sub') userId: number,
   ) {
-    const updated = await this.tweetService.updateTweet(tweetId, tweet);
+    const updated = await this.tweetService.updateTweet(userId, tweetId, tweet);
 
     return plainToInstance(TweetResponseDto, updated, {
       excludeExtraneousValues: true,
@@ -86,8 +87,11 @@ export class TweetController {
   }
 
   @Delete(':id')
-  async deleteTweet(@Param('id', ParseIntPipe) tweetId: number) {
-    return await this.tweetService.deleteTweet(tweetId);
+  async deleteTweet(
+    @Param('id', ParseIntPipe) tweetId: number,
+    @ActiveUser('sub') userId: number,
+  ) {
+    return await this.tweetService.deleteTweet(userId, tweetId);
   }
 
   @Post(':id/analyze')
