@@ -13,7 +13,7 @@ services:
     build:
       context: .
     container_name: nest-app
-    command: sh -c "npm run migration:run:inside && npm run start:prod"
+    command: sh -c "npm run migration:run:inside && sleep infinity"
     ports:
       - "${APP_PORT}:${APP_PORT}"
     depends_on:

@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, Logger } from '@nestjs/common';
 import { Redis } from 'ioredis';
 
 /* Estruturas salvas no Redis
@@ -12,119 +12,109 @@ user_jtis:42 → {abc123, def456, ghi789} */
 
 @Injectable()
 export class RedisJtiProvider {
+  private readonly logger = new Logger(RedisJtiProvider.name);
+
+  private static readonly JTI_KEY_PREFIX = 'jti';
+  private static readonly USER_JTIS_KEY_PREFIX = 'user_jtis';
+
   constructor(
     @Inject('REDIS_CLIENT')
     private readonly redisClient: Redis,
   ) {}
 
-  // Adiciona um novo JTI no set do usuário
-  async addJti(userId: string, jti: string, ttlSeconds: number) {
-    await this.redisClient.setex(`jti:${jti}`, ttlSeconds, userId);
-    await this.redisClient.sadd(`user_jtis:${userId}`, jti);
-    await this.redisClient.expire(`user_jtis:${userId}`, ttlSeconds);
+  // Adiciona um novo JTI e associa ao usuário
+  // Cada JTI expira individualmente, mas o set de JTIs do usuário é persistente.
+  async addJti(userId: string, jti: string, ttlSeconds: number): Promise<void> {
+    try {
+      await this.redisClient.setex(this.buildJtiKey(jti), ttlSeconds, userId);
+      await this.redisClient.sadd(this.buildUserJtisKey(userId), jti);
+    } catch (error) {
+      this.logger.error(`Error adding JTI for user ${userId}`);
+      throw error;
+    }
   }
 
-  // Verifica se o JTI está válido (existe no Redis)
+  // Verifica se o JTI está válido (existe no Redis e pertence ao usuário)
   async isValidJti(userId: string, jti: string): Promise<boolean> {
-    const stored = await this.redisClient.get(`jti:${jti}`);
-    return stored === userId;
+    try {
+      const storedUserId = await this.redisClient.get(this.buildJtiKey(jti));
+      return storedUserId === userId;
+    } catch (error) {
+      this.logger.error(
+        `Error validating JTI ${jti} for user ${userId}`,
+        error,
+      );
+      return false;
+    }
   }
 
   // Remove um JTI específico em logout de usuário ou endpoint refresh token
-  async removeJti(userId: string, jti: string) {
-    await this.redisClient.del(`jti:${jti}`);
-    await this.redisClient.srem(`user_jtis:${userId}`, jti);
-  }
-
-  // Remove um JTIs já expirados de um usuário
-  async cleanupExpiredJtis(userId: string) {
-    // Busca todos os JTIs associados ao usuário
-    const jtis = await this.redisClient.smembers(`user_jtis:${userId}`);
-    if (!jtis.length) return;
-
-    // Monta um pipeline para verificar a existência de cada jti:<uuid>
-    const pipeline = this.redisClient.pipeline();
-    jtis.forEach((jti) => {
-      pipeline.exists(`jti:${jti}`);
-    });
-
-    const results = await pipeline.exec();
-    if (!results) return;
-
-    // Filtra os JTIs cujo valor correspondente jti:<uuid> não existe mais
-    const expiredJtis = jtis.filter((_, i) => {
-      const res = results[i];
-      return Array.isArray(res) && res[0] === null && res[1] === 0;
-    });
-
-    if (!expiredJtis.length) return;
-
-    // Remove os JTIs expirados do set do usuário
-    const removalPipeline = this.redisClient.pipeline();
-    removalPipeline.srem(`user_jtis:${userId}`, ...expiredJtis);
-    await removalPipeline.exec();
-  }
-
-  // Remove todos os JTIs de um usuário
-  async clearAllJtis(userId: string) {
-    const allJtis = await this.redisClient.smembers(`user_jtis:${userId}`);
-    if (allJtis.length) {
+  async removeJti(userId: string, jti: string): Promise<void> {
+    try {
       const pipeline = this.redisClient.pipeline();
-      allJtis.forEach((jti) => {
-        pipeline.del(`jti:${jti}`);
-        pipeline.srem(`user_jtis:${userId}`, jti);
-      });
-      pipeline.del(`user_jtis:${userId}`);
+      pipeline.del(this.buildJtiKey(jti));
+      pipeline.srem(this.buildUserJtisKey(userId), jti);
       await pipeline.exec();
+    } catch (error) {
+      this.logger.error(`Error removing JTI ${jti} from user ${userId}`, error);
+      throw error;
     }
   }
+
+  // Remove JTIs já expirados do set do usuário.
+  async cleanupExpiredJtis(userId: string): Promise<void> {
+    try {
+      const jtis = await this.redisClient.smembers(
+        this.buildUserJtisKey(userId),
+      );
+      if (!jtis.length) return;
+
+      const pipeline = this.redisClient.pipeline();
+      jtis.forEach((jti) => pipeline.exists(this.buildJtiKey(jti)));
+      const results = await pipeline.exec();
+
+      const expiredJtis = jtis.filter((_, i) => results?.[i]?.[1] === 0);
+      if (expiredJtis.length) {
+        await this.redisClient.srem(
+          this.buildUserJtisKey(userId),
+          ...expiredJtis,
+        );
+      }
+    } catch (error) {
+      this.logger.error(
+        `Error while clearing expired JTIs for user ${userId}`,
+        error,
+      );
+      throw error;
+    }
+  }
+
+  // Remove todos os JTIs de um usuário (logout global)
+  async clearAllJtis(userId: string): Promise<void> {
+    try {
+      const jtis = await this.redisClient.smembers(
+        this.buildUserJtisKey(userId),
+      );
+      if (!jtis.length) return;
+
+      const pipeline = this.redisClient.pipeline();
+      jtis.forEach((jti) => pipeline.del(this.buildJtiKey(jti)));
+      pipeline.del(this.buildUserJtisKey(userId));
+      await pipeline.exec();
+    } catch (error) {
+      this.logger.error(
+        `Error while clearing all JTIs for user ${userId}`,
+        error,
+      );
+    }
+  }
+
+  // Helpers para padronizar as chaves
+  private buildJtiKey(jti: string): string {
+    return `${RedisJtiProvider.JTI_KEY_PREFIX}:${jti}`;
+  }
+
+  private buildUserJtisKey(userId: string): string {
+    return `${RedisJtiProvider.USER_JTIS_KEY_PREFIX}:${userId}`;
+  }
 }
-
-/*
-  // { member: 'abc123', score: 1712345678901 },
-  // { member: 'def456', score: 1712345678901 },
-  // { member: 'ghi789', score: 1712345678901 }
-  // 1. Armazena JTI com score = timestamp de expiração
-  async addJti(userId: string, jti: string, ttlSeconds: number) {
-    const expireAt = Date.now() + ttlSeconds * 1000;
-    await this.redisClient.zadd(`user_jtis:${userId}`, expireAt, jti);
-  }
-
-  // 2. Verifica se JTI existe e ainda não expirou
-  async isValidJti(userId: string, jti: string): Promise<boolean> {
-    // Primeiro, limpa expirados
-    await this.cleanupExpiredJtis(userId);
-
-    // Checa presença
-    const score = await this.redisClient.zscore(`user_jtis:${userId}`, jti);
-    return score !== null;
-  }
-
-  // 3. Remove JTI usado ou em logout
-  async removeJti(userId: string, jti: string) {
-    await this.redisClient.zrem(`user_jtis:${userId}`, jti);
-  }
-
-  // 4. Limpa todos os JTIs cujo score <= now
-  async cleanupExpiredJtis(userId: string) {
-    const now = Date.now();
-    // Remove todos os membros expirados
-    await this.redisClient.zremrangebyscore(
-      `user_jtis:${userId}`,
-      0,
-      now,
-    );
-  }
-
-  // 5. Revoga todos os JTIs de um usuário
-  async clearAllJtis(userId: string) {
-    await this.redisClient.del(`user_jtis:${userId}`);
-  }
-}
-
-Quando migrar para Sorted Sets
-Se você espera milhares de refresh tokens por usuário.
-
-Quando a limpeza periódica dos tokens expirados começa a impactar a latência.
-
-Para tornar o ciclo de vida do token totalmente gerenciado dentro de um único key. */

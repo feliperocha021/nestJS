@@ -58,7 +58,6 @@ export class UserController {
     });
   }
 
-  @AllowAnonymous()
   @Post()
   async createUser(@Body() user: CreateUserDto) {
     const newUser = await this.userService.createUser(user);
