@@ -19,7 +19,25 @@ import { ActiveUser } from 'src/auth/decorators/active-user.decorator';
 import { plainToInstance } from 'class-transformer';
 import { TweetResponseDto } from './dto/tweet-response.dto';
 import { LambdaService } from 'src/lambda/lambda.service';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import {
+  ApiBadRequestError,
+  ApiForbiddenError,
+  ApiInternalServerError,
+  ApiNotFoundError,
+  ApiUnauthorizedError,
+} from 'src/common/decorators/api-errors.decorators';
+import { PaginatedTweetResponseDto } from './dto/paginated-profile-response.dto';
 
+@ApiTags('Tweets')
+@ApiBearerAuth('JWT-auth')
 @Controller('tweets')
 export class TweetController {
   constructor(
@@ -28,6 +46,18 @@ export class TweetController {
   ) {}
 
   @Get()
+  @ApiOperation({ summary: 'List the tweets of the authenticate user' })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiResponse({
+    status: 200,
+    description: 'Paginated list of tweets',
+    type: PaginatedTweetResponseDto,
+  })
+  @ApiBadRequestError('Invalid pagination parameters')
+  @ApiNotFoundError('User not found')
+  @ApiUnauthorizedError()
+  @ApiInternalServerError()
   async getTweetsByUser(
     @Req() req: Request,
     @ActiveUser('sub') userId: number,
@@ -62,6 +92,16 @@ export class TweetController {
   }
 
   @Post()
+  @ApiOperation({ summary: 'Create a new tweet for the authenticate user' })
+  @ApiResponse({
+    status: 201,
+    description: 'Tweet successfully created',
+    type: TweetResponseDto,
+  })
+  @ApiBadRequestError('Invalids Hashtags')
+  @ApiNotFoundError('User not found')
+  @ApiUnauthorizedError()
+  @ApiInternalServerError()
   async createTweetOfUser(
     @Body() tweet: CreateTweetDto,
     @ActiveUser('sub') userId: number,
@@ -74,6 +114,20 @@ export class TweetController {
   }
 
   @Patch(':id')
+  @ApiOperation({
+    summary: 'Update an existing tweet from the authenticate user',
+  })
+  @ApiParam({ name: 'id', type: Number })
+  @ApiResponse({
+    status: 200,
+    description: 'Tweet successfully updated',
+    type: TweetResponseDto,
+  })
+  @ApiBadRequestError('Invalid hashtags')
+  @ApiNotFoundError('Tweet not found')
+  @ApiForbiddenError('The user does not have permission to update this tweet')
+  @ApiUnauthorizedError()
+  @ApiInternalServerError()
   async updateTweet(
     @Body() tweet: UpdateTweetDto,
     @Param('id', ParseIntPipe) tweetId: number,
@@ -87,6 +141,13 @@ export class TweetController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Deletes a tweet from the authenticate user' })
+  @ApiParam({ name: 'id', type: Number })
+  @ApiResponse({ status: 200, description: 'Tweet successfully removed' })
+  @ApiNotFoundError('Tweet not found')
+  @ApiForbiddenError('The user does not have permission to update this tweet')
+  @ApiUnauthorizedError()
+  @ApiInternalServerError()
   async deleteTweet(
     @Param('id', ParseIntPipe) tweetId: number,
     @ActiveUser('sub') userId: number,
@@ -95,6 +156,26 @@ export class TweetController {
   }
 
   @Post(':id/analyze')
+  @ApiOperation({ summary: 'Analyze the content of a tweet using Lambda' })
+  @ApiParam({ name: 'id', type: Number })
+  @ApiResponse({
+    status: 200,
+    description: 'Resulted of the analyze from the tweet',
+    schema: {
+      example: {
+        tweetId: 1,
+        text: 'Hoje é um bom dia',
+        analysis: {
+          length: 17,
+          words: 5,
+          sentiment: 'positivo',
+        },
+      },
+    },
+  })
+  @ApiNotFoundError('Tweet não encontrado')
+  @ApiUnauthorizedError()
+  @ApiInternalServerError()
   async analyzeTweet(@Param('id', ParseIntPipe) tweetId: number) {
     const tweet = await this.tweetService.getTweetById(tweetId);
 

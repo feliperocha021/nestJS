@@ -71,7 +71,26 @@ docker logs nest-app -f
 ```
 
 ### A API estará disponível em:
-```http://localhost:3000```
+```http://localhost:3000/api/v1```
+
+# 📖 Documentação da API (Swagger)
+
+Este projeto utiliza o **Swagger** para documentar todos os endpoints da API, incluindo:
+
+- DTOs de request e response
+- Estrutura de paginação (`data`, `meta`, `links`)
+- Respostas de erro padronizadas (`400`, `401`, `403`, `404`, `409`, `500`)
+- Exemplos de requisição e resposta
+
+Após subir a aplicação, a documentação interativa estará disponível em:
+
+👉 [http://localhost:3000/api/docs](http://localhost:3000/api/docs)
+
+Com o Swagger, você pode:
+- Explorar todos os endpoints
+- Testar requisições diretamente no navegador
+- Visualizar exemplos de respostas e erros
+
 
 # 📜 Scripts Disponíveis
 

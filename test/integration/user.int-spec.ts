@@ -16,7 +16,7 @@ import { PaginationModule } from '../../src/common/pagination/pagination.module'
 import { HashingProvider } from '../../src/auth/provider/hashing.provider';
 import { BcryptProvider } from '../../src/auth/provider/bcrypt.provider';
 
-import { CreateUserDto } from '../../src/user/dtos/create-user.dto';
+import { CreateUserDto } from '../../src/user/dto/create-user.dto';
 import { UserAlreadyExistsException } from 'src/customExceptions/user-arealdy-exists.exception';
 import { PostgresTestModule } from '../postgres-test.module';
 import { Tweet } from 'src/tweet/tweet.entity';

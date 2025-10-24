@@ -9,8 +9,14 @@ import {
 import { CreateProfileDto } from 'src/profile/dto/create-profile.dto';
 import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
+  @ApiProperty({
+    example: 'user@email.com',
+    description: 'Valid user email address',
+    maxLength: 100,
+  })
   @IsEmail()
   @IsNotEmpty()
   @MaxLength(100, {
@@ -18,6 +24,11 @@ export class CreateUserDto {
   })
   email: string;
 
+  @ApiProperty({
+    example: 'jhon123',
+    description: 'Unique username',
+    maxLength: 20,
+  })
   @IsString()
   @IsNotEmpty()
   @MaxLength(20, {
@@ -25,6 +36,13 @@ export class CreateUserDto {
   })
   username: string;
 
+  @ApiProperty({
+    example: 'Password123!',
+    description:
+      'Password between 8 and 16 characters, containing at least one uppercase letter, one lowercase letter, one number, and one symbol',
+    minLength: 8,
+    maxLength: 16,
+  })
   @IsString()
   @IsNotEmpty()
   @Matches(
@@ -36,6 +54,11 @@ export class CreateUserDto {
   )
   password: string;
 
+  @ApiProperty({
+    description: 'Profile associated with the user',
+    required: false,
+    type: () => CreateProfileDto,
+  })
   @IsOptional()
   @ValidateNested()
   @Type(() => CreateProfileDto)

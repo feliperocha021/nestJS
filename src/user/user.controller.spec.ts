@@ -3,9 +3,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { UserDetailDto } from './dtos/user-detail.dto';
+import { UserDetailDto } from './dto/user-detail.dto';
 import { NotFoundException } from '@nestjs/common';
-import { CreateUserDto } from './dtos/create-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { UserAlreadyExistsException } from 'src/customExceptions/user-arealdy-exists.exception';
 import {
   USER_ID,

@@ -1,5 +1,5 @@
 import { registerAs } from '@nestjs/config';
-import { CreateUserDto } from 'src/user/dtos/create-user.dto';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { LoginDto } from 'src/auth/dto/login.dto';
 
 /**

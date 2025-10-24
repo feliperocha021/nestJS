@@ -7,7 +7,7 @@ import {
 import { ConfigType } from '@nestjs/config';
 import authConfig from './config/auth.config';
 import { UserService } from 'src/user/user.service';
-import { CreateUserDto } from 'src/user/dtos/create-user.dto';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { HashingProvider } from './provider/hashing.provider';
 import { JwtService } from '@nestjs/jwt';

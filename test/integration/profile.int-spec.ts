@@ -11,7 +11,7 @@ import { ProfileService } from '../../src/profile/profile.service';
 import { PaginationModule } from '../../src/common/pagination/pagination.module';
 
 import { UserService } from '../../src/user/user.service';
-import { CreateUserDto } from '../../src/user/dtos/create-user.dto';
+import { CreateUserDto } from '../../src/user/dto/create-user.dto';
 import { UserModule } from 'src/user/user.module';
 
 import { APP_GUARD } from '@nestjs/core';

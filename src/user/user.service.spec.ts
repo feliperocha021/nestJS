@@ -9,7 +9,7 @@ import { PaginationProvider } from 'src/common/pagination/pagination.provider';
 import { HashingProvider } from 'src/auth/provider/hashing.provider';
 import { UserAlreadyExistsException } from 'src/customExceptions/user-arealdy-exists.exception';
 import { PaginationQueryDto } from 'src/common/pagination/dto/pagination-query.dto';
-import { CreateUserDto } from './dtos/create-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 
 import {
   PROFILE_ID,

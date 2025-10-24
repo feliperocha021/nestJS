@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthService } from '../../src/auth/auth.service';
 import { UserService } from '../../src/user/user.service';
 import { RedisJtiProvider } from '../../src/auth/provider/redis-jti.provider';
-import { CreateUserDto } from '../../src/user/dtos/create-user.dto';
+import { CreateUserDto } from '../../src/user/dto/create-user.dto';
 
 import { PostgresTestModule } from '../postgres-test.module';
 import { RedisTestModule } from '../redis-test.module';
